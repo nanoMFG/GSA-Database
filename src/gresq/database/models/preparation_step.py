@@ -15,9 +15,9 @@ class PreparationStep(Base):
         [type]: [description]
     """
 
-    __tablename__ = "preparation_step"
+    # __tablename__ = "preparation_step"
 
-    id = Column(Integer, primary_key=True, info={"verbose_name": "ID"})
+    # id = Column(Integer, primary_key=True, info={"verbose_name": "ID"})
 
     recipe_id = Column(
         Integer,

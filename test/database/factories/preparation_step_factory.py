@@ -18,9 +18,7 @@ class PreparationStepFactory(factory.alchemy.SQLAlchemyModelFactory):
 
     step = factory.Iterator(LIST_SIZES)
     name = factory.Iterator(PreparationStep.name.info["choices"])
-    duration = factory.Faker(
-        "pyfloat", positive=False, min_value=0.0, max_value=100.0
-    )
+    duration = factory.Faker("pyfloat", positive=False, min_value=0.0, max_value=100.0)
     furnace_temperature = factory.Faker(
         "pyfloat", positive=True, min_value=800.0, max_value=2000.0
     )

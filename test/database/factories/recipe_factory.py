@@ -11,7 +11,7 @@ class RecipeFactory(factory.alchemy.SQLAlchemyModelFactory):
     class Meta:
         model = Recipe
         sqlalchemy_session = dal.Session()
-        sqlalchemy_session_persistence = "commit"
+        sqlalchemy_session_persistence = None
 
     preparation_steps = factory.RelatedFactoryList(
         "test.database.factories.PreparationStepFactory", "recipe", size=3

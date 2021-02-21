@@ -11,13 +11,33 @@ Todo:
     * Possibly make model a Package.
 """
 import typing
-from sqlalchemy.ext.declarative import declarative_base
+import re
+from sqlalchemy import Column, Integer
+from sqlalchemy.ext.declarative import declarative_base, declared_attr
 from sqlalchemy.orm.exc import DetachedInstanceError
 
 class_registry = {}
 
-
 class Base(object):
+    """Augmented Declarative Base class
+
+    * Automatic camel_case tables names based on ClassName
+    * Automatic integer "id" column as primary key
+     
+    """
+
+    @declared_attr
+    def __tablename__(cls):
+        return re.sub(r'(?<!^)(?=[A-Z])', '_', cls.__name__).lower()
+
+    id = Column(
+        Integer, 
+        primary_key=True, 
+        info={
+            "verbose_name": "ID"
+            }
+        )
+
     def __repr__(self) -> str:
         return self._repr(id=self.id)
 

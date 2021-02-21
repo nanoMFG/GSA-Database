@@ -1,6 +1,11 @@
 """ Tests for the Recipe model
 
-Test relationships, properties and delete cascade behavior.
+Test relationships, properties and delete cascade behavior.  Testing at the model level
+is intended to provide basic sanity checks, NOT to rewrite every bit of model logic and
+ test it.
+
+Application level testing should be developed to test expected behavior of application
+logic when interacting with the database.
 
 Conventions:
 
@@ -15,136 +20,68 @@ from math import isclose
 
 from gresq.database import dal, Base
 from gresq.database.models import Recipe
-from test.database.factories import RecipeFactory
+from test.database.factories import RecipeFactory, PreparationStepFactory
+
 
 @pytest.fixture(scope="class")
-def recipe():
-    """Set up a set of recipes for testing using the factory boy factories.
-    """
-    # create_all is already in test/database__init__.py. 
-    #  I don't know why I have to call it here again, but I do.
-    Base.metadata.create_all(bind=dal.engine)
-    # Add some data here
-    print("Hey, here come some samples...")
-    session = dal.Session()
-    recipes = RecipeFactory.create_batch(5)
-    session.add(recipes)
-    session.flush()
-    session.commit()
+def recipe_query():
+    sess = dal.Session()
+    return sess.query(Recipe).all()
+
 
 class TestRecipeQueries:
     def test_simple(self, recipe):
-        sesh =  dal.Session()
-        return sesh.query(Recipe).all()
+        sesh = dal.Session()
+        qall = sesh.query(Recipe).all()
+        for row in qall:
+            print(f"id: {row.id}")
+            for step in row.preparation_steps:
+                print(f"step: {step.name}")
 
     # def test_rel__preparation_steps(self, sample, all_sample_query):
     #     pass
 
-    # def test_prop__maximum_temperature(self, sample, all_sample_query):
-    #     for r in all_sample_query:
-    #         for p in r.recipe.preparation_steps:
-    #             print(f"{p.furnace_temperature}")
-    #         print(
-    #             f"max: {r.recipe.maximum_temperature}"
-    #         )
-    #     assert all(
-    #         [r.recipe.maximum_temperature == s.recipe.maximum_temperature 
-    #          for r, s in zip(all_sample_query, sample)]
-    #     )
+    def test_prop__maximum_temperature(self, recipe):
+        """Test maximum_temperature hybrid property and expression behavior.
 
-    # def test_prop__maximum_temperature_query(self, sample):
-    #     sesh = dal.Session()
-    #     query = sesh.query(Recipe.maximum_temperature).all()
-    #     for r in query:
-    #         print(r)
+        Check basic functionality of attribute and its SQL expression
 
-    # def test_prop__maximum_pressure(self, sample, all_sample_query):
-    #     for r in all_sample_query:
-    #         for p in r.recipe.preparation_steps:
-    #             print(f"{p.furnace_pressure}")
-    #         print(
-    #             f"max: {r.recipe.maximum_pressure}"
-    #         )
-    #     assert all(
-    #         [r.recipe.maximum_pressure == s.recipe.maximum_pressure 
-    #          for r, s in zip(all_sample_query, sample)]
-    #     )
+        Args:
+            recipe [Recipe]: List of Recipes from factory engine
+        """
+        # From hybrid attribute of factory session
+        print("\nFactory:")
+        fact = {}
+        for r in recipe:
+            print(f"id: {r.id}, max temp: {r.maximum_temperature}")
+            fact[r.id] = r
+        # Test query expression behavior
+        sess = dal.Session()
+        print("Query")
+        for r in sess.query(Recipe.id, Recipe.maximum_temperature).filter(
+            Recipe.id.in_([r.id for r in recipe])
+        ):
+            print(f"id: {r.id}, max temp: {r.maximum_temperature}")
+            assert isclose(r.maximum_temperature,fact[r.id].maximum_temperature)
 
-    # def test_prop__maximum_pressure_query(self, sample):
-    #     sesh = dal.Session()
-    #     query = sesh.query(Recipe.maximum_pressure).all()
-    #     for r in query:
-    #         print(r)
+      
+    def test_prop__maximum_pressure(self, recipe):
+        assert False
 
-    # def test_prop__average_carbon_flow_rate(self, sample, all_sample_query):
-    #     for r, s in zip(all_sample_query, sample):
-    #         for p in r.recipe.preparation_steps:
-    #             print(f"{p.carbon_source_flow_rate}")
-    #         print(
-    #             f"average: {r.recipe.average_carbon_flow_rate}"
-    #             f"average: {s.recipe.average_carbon_flow_rate}"
-    #         )
-    #     assert all(
-    #         [isclose(r.recipe.average_carbon_flow_rate, s.recipe.average_carbon_flow_rate) 
-    #          for r, s in zip(all_sample_query, sample)]
-    #     )
-
-    # def test_prop__average_carbon_flow_rate_query(self, sample, all_sample_query):
-    #     sesh = dal.Session()
-    #     query = sesh.query(Recipe.average_carbon_flow_rate).all()
-    #     for r in query:
-    #         print(r)
-
-
-    # def test_prop__carbon_source(self, sample, all_sample_query):
-    #     for r in all_sample_query:
-    #         for p in r.recipe.preparation_steps:
-    #             print(f"step: {p.carbon_source}")
-    #         print(f"recipe: {r.recipe.carbon_source}")
-
-    # def test_prop__carbon_source_query(self, sample, all_sample_query):
-    #     sesh = dal.Session()
-    #     query = sesh.query(Recipe.carbon_source).all()
-    #     for r in query:
-    #         print(r)
+    def test_prop__average_carbon_flow_rate(self, recipe):
+        assert False
     
-    # def test_prop__uses_helium(self, sample, all_sample_query):
-    #     for r in all_sample_query:
-    #         print(f"recipe uses helium: {r.recipe.uses_helium}")
-    #         for p in r.recipe.preparation_steps:
-    #             print(f"{p.helium_flow_rate}")
+    def test_prop__carbon_source(self, recipe):
+        assert False
 
-    # def test_prop__uses_helium_query(self, sample, all_sample_query):
-    #     sesh = dal.Session()
-    #     query = sesh.query(Recipe.uses_helium).all()
-    #     for r in query:
-    #         print(r)
+    def test_prop__uses_helium(self, recipe):
+        assert False
 
-    # def test_prop__uses_argon(self, sample, all_sample_query):
-    #     for r in all_sample_query:
-    #         print(f"recipe uses argon: {r.recipe.uses_argon}")
-    #         for p in r.recipe.preparation_steps:
-    #             print(f"{p.argon_flow_rate}")
+    def test_prop__uses_argon(self, recipe):
+        assert False
 
-    # def test_prop__uses_argon_query(self, sample, all_sample_query):
-    #     sesh = dal.Session()
-    #     query = sesh.query(Recipe.uses_argon).all()
-    #     for r in query:
-    #         print(r)
+    def test_prop__uses_hydrogen(self, recipe):
+        assert False
 
-    # def test_prop__uses_hydrogen(self, sample, all_sample_query):
-    #     for r in all_sample_query:
-    #         print(f"recipe uses hydrogen: {r.recipe.uses_hydrogen}")
-    #         for p in r.recipe.preparation_steps:
-    #             print(f"{p.hydrogen_flow_rate}")
-
-    # def test_prop__uses_hydrogen_query(self, sample, all_sample_query):
-    #     sesh = dal.Session()
-    #     query = sesh.query(Recipe.uses_hydrogen).all()
-    #     for r in query:
-    #         print(r)
-
-    # def test__json_encodable(self, sample, all_sample_query):
-    #     for r in all_sample_query:
-    #         print(r.recipe.json_encodable())
-        
+    def test__json_encodable(self, recipe):
+        assert False
