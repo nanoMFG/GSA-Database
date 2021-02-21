@@ -11,8 +11,8 @@ class Recipe(Base):
     # __tablename__ = "recipe"
 
     # id = Column(
-    #     Integer, 
-    #     primary_key=True, 
+    #     Integer,
+    #     primary_key=True,
     #     info={
     #         "verbose_name": "ID"
     #         }
@@ -168,4 +168,3 @@ class Recipe(Base):
             .correlate(cls)
         )
         return exists(s)
-
