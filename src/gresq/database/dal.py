@@ -38,7 +38,6 @@ class DataAccessLayer:
             self.engine = create_engine(
                 config.DATABASEURI, connect_args=ast.literal_eval(config.DATABASEARGS)
             )
-        print("HEYYY")
         Base.metadata.create_all(bind=self.engine)
         self.Session = scoped_session(
             sessionmaker(autocommit=False, autoflush=True, bind=self.engine)

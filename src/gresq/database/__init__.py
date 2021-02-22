@@ -31,8 +31,6 @@ class Base(object):
     def __tablename__(cls):
         return re.sub(r"(?<!^)(?=[A-Z])", "_", cls.__name__).lower()
 
-    id = Column(Integer, primary_key=True, info={"verbose_name": "ID"})
-
     def __repr__(self) -> str:
         return self._repr(id=self.id)
 

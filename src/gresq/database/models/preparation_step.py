@@ -15,10 +15,8 @@ class PreparationStep(Base):
         [type]: [description]
     """
 
-    # __tablename__ = "preparation_step"
-
-    # id = Column(Integer, primary_key=True, info={"verbose_name": "ID"})
-
+    # Basic integer primary key
+    id = Column(Integer, primary_key=True, info={"verbose_name": "ID"})
     recipe_id = Column(
         Integer,
         ForeignKey("recipe.id", ondelete="CASCADE"),

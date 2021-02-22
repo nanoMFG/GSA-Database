@@ -8,15 +8,8 @@ from gresq.database import Base, class_registry
 
 
 class Recipe(Base):
-    # __tablename__ = "recipe"
-
-    # id = Column(
-    #     Integer,
-    #     primary_key=True,
-    #     info={
-    #         "verbose_name": "ID"
-    #         }
-    #     )
+    # Basic integer primary key
+    id = Column(Integer, primary_key=True, info={"verbose_name": "ID"})
 
     # ONE-TO-MANY: recipe -> preparation_step
     preparation_steps = relationship(
