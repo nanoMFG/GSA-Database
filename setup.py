@@ -19,5 +19,9 @@ setup(
         "sqlalchemy>=1.3.23",
         "pymysql>=1.0.2",
     ],
+    test_requires=[
+        "pytest",
+        "factory_boy"
+    ],
     python_requires=">3.8",
 )

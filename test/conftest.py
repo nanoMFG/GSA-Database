@@ -81,4 +81,4 @@ def recipe(persistdb, dropdb):
     if dropdb:
         sess = dal.Session()
         sess.close()
-        Base.metadata.drop_all(bind=dal.engine)
+        #Base.metadata.drop_all(bind=dal.engine)

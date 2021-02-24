@@ -22,6 +22,7 @@ from gresq.database import dal, Base
 from gresq.database.models import Recipe
 from test.database.factories import RecipeFactory, PreparationStepFactory
 
+RTOL = 1e-3
 
 @pytest.fixture(scope="class")
 def recipe_query():
@@ -62,26 +63,149 @@ class TestRecipeQueries:
             Recipe.id.in_([r.id for r in recipe])
         ):
             print(f"id: {r.id}, max temp: {r.maximum_temperature}")
-            assert isclose(r.maximum_temperature,fact[r.id].maximum_temperature)
+            assert isclose(r.maximum_temperature,fact[r.id].maximum_temperature, rel_tol=RTOL)
 
       
     def test_prop__maximum_pressure(self, recipe):
-        assert False
+        """Test maximum_pressure hybrid property and expression behavior.
+
+        Check basic functionality of attribute and its SQL expression
+
+        Args:
+            recipe [Recipe]: List of Recipes from factory engine
+        """
+        # From hybrid attribute of factory session
+        print("\nFactory:")
+        fact = {}
+        for r in recipe:
+            print(f"id: {r.id}, max press: {r.maximum_pressure}")
+            fact[r.id] = r
+        # Test query expression behavior
+        sess = dal.Session()
+        print("Query")
+        for r in sess.query(Recipe.id, Recipe.maximum_pressure).filter(
+            Recipe.id.in_([r.id for r in recipe])
+        ):
+            print(f"id: {r.id}, max press: {r.maximum_pressure}")
+            assert isclose(r.maximum_pressure,fact[r.id].maximum_pressure, rel_tol=RTOL)
+
 
     def test_prop__average_carbon_flow_rate(self, recipe):
-        assert False
+        """Test average_carbon_flow_rate hybrid property and expression behavior.
+
+        Check basic functionality of attribute and its SQL expression
+
+        Args:
+            recipe [Recipe]: List of Recipes from factory engine
+        """
+        # From hybrid attribute of factory session
+        print("\nFactory:")
+        fact = {}
+        for r in recipe:
+            print(f"id: {r.id}, value: {r.average_carbon_flow_rate}")
+            fact[r.id] = r
+        # Test query expression behavior
+        sess = dal.Session()
+        print("Query")
+        for r in sess.query(Recipe.id, Recipe.average_carbon_flow_rate).filter(
+            Recipe.id.in_([r.id for r in recipe])
+        ):
+            print(f"id: {r.id}, value: {r.average_carbon_flow_rate}")
+            assert isclose(r.average_carbon_flow_rate,fact[r.id].average_carbon_flow_rate, rel_tol=RTOL)
+
     
     def test_prop__carbon_source(self, recipe):
-        assert False
+        """Test carbon_source hybrid property and expression behavior.
+
+        Check basic functionality of attribute and its SQL expression
+
+        Args:
+            recipe [Recipe]: List of Recipes from factory engine
+        """
+        # From hybrid attribute of factory session
+        print("\nFactory:")
+        fact = {}
+        for r in recipe:
+            print(f"id: {r.id}, value: {r.carbon_source}")
+            fact[r.id] = r
+        # Test query expression behavior
+        sess = dal.Session()
+        print("Query")
+        for r in sess.query(Recipe.id, Recipe.carbon_source).filter(
+            Recipe.id.in_([r.id for r in recipe])
+        ):
+            print(f"id: {r.id}, value: {r.carbon_source}")
+            assert(fact[r.id].carbon_source == r.carbon_source)
 
     def test_prop__uses_helium(self, recipe):
-        assert False
+        """Test uses_helium hybrid property and expression behavior.
+
+        Check basic functionality of attribute and its SQL expression
+
+        Args:
+            recipe [Recipe]: List of Recipes from factory engine
+        """
+        # From hybrid attribute of factory session
+        print("\nFactory:")
+        fact = {}
+        for r in recipe:
+            print(f"id: {r.id}, value: {r.uses_helium}")
+            fact[r.id] = r
+        # Test query expression behavior
+        sess = dal.Session()
+        print("Query")
+        for r in sess.query(Recipe.id, Recipe.uses_helium).filter(
+            Recipe.id.in_([r.id for r in recipe])
+        ):
+            print(f"id: {r.id}, value: {r.uses_helium}")
+            assert(fact[r.id].uses_helium == r.uses_helium)
 
     def test_prop__uses_argon(self, recipe):
-        assert False
+        """Test uses_argon hybrid property and expression behavior.
+
+        Check basic functionality of attribute and its SQL expression
+
+        Args:
+            recipe [Recipe]: List of Recipes from factory engine
+        """
+        # From hybrid attribute of factory session
+        print("\nFactory:")
+        fact = {}
+        for r in recipe:
+            print(f"id: {r.id}, value: {r.uses_argon}")
+            fact[r.id] = r
+        # Test query expression behavior
+        sess = dal.Session()
+        print("Query")
+        for r in sess.query(Recipe.id, Recipe.uses_argon).filter(
+            Recipe.id.in_([r.id for r in recipe])
+        ):
+            print(f"id: {r.id}, value: {r.uses_argon}")
+            assert(fact[r.id].uses_argon == r.uses_argon)
 
     def test_prop__uses_hydrogen(self, recipe):
-        assert False
+        """Test uses_hydrogen hybrid property and expression behavior.
 
-    def test__json_encodable(self, recipe):
-        assert False
+        Check basic functionality of attribute and its SQL expression
+
+        Args:
+            recipe [Recipe]: List of Recipes from factory engine
+        """
+        # From hybrid attribute of factory session
+        print("\nFactory:")
+        fact = {}
+        for r in recipe:
+            print(f"id: {r.id}, value: {r.uses_hydrogen}")
+            fact[r.id] = r
+        # Test query expression behavior
+        sess = dal.Session()
+        print("Query")
+        for r in sess.query(Recipe.id, Recipe.uses_hydrogen).filter(
+            Recipe.id.in_([r.id for r in recipe])
+        ):
+            print(f"id: {r.id}, value: {r.uses_hydrogen}")
+            assert(fact[r.id].uses_hydrogen == r.uses_hydrogen)
+
+
+    #def test__json_encodable(self, recipe):
+    #    assert False
