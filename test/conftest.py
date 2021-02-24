@@ -53,7 +53,14 @@ def dropdb(request):
     Returns:
         Result of getoption.
     """
-    return request.config.getoption("--dropdb")
+    opt = request.config.getoption("--dropdb")
+    ret = True
+    if opt:
+        if opt=="False":
+            ret = False
+    else:
+        ret = False
+    return ret
 
 @pytest.fixture(scope="class")
 def recipe(persistdb, dropdb):
@@ -81,4 +88,4 @@ def recipe(persistdb, dropdb):
     if dropdb:
         sess = dal.Session()
         sess.close()
-        #Base.metadata.drop_all(bind=dal.engine)
+        Base.metadata.drop_all(bind=dal.engine)
