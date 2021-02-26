@@ -28,6 +28,8 @@ class PreparationStepFactory(factory.alchemy.SQLAlchemyModelFactory):
     sample_location = factory.Faker(
         "pyfloat", positive=True, min_value=1.0, max_value=10.0
     )
+    # Try to null for some recipe ids., maybe Lazyfunction like:
+    # date = factory.LazyFunction(lambda: datetime.date.today() if random.random() > 0.3 else None)
     helium_flow_rate = factory.Faker(
         "pyfloat", positive=False, min_value=0.0, max_value=100.0
     )
