@@ -76,6 +76,7 @@ def recipe(persistdb, dropdb):
     """
     # create_all is already in test/database__init__.py.
     #  I don't know why I have to call it here again, but I do.
+    #Base.metadata.drop_all(bind=dal.engine)
     Base.metadata.create_all(bind=dal.engine)
     print("Hey, here come some recipes...")
     # Set persistance for test data

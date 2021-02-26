@@ -31,6 +31,12 @@ class Sample(Base):
         autoincrement="ignore_fk",
         info={"verbose_name": "ID"},
     )
+    recipe_id = Column(
+        Integer,
+        ForeignKey("recipe.id", ondelete="CASCADE"),
+        info={"verbose_name": "Recipe ID"},
+        index=True,
+    )
     software_name = Column(String(20), info={"verbose_name": "Analysis Software"})
     software_version = Column(String(20), info={"verbose_name": "Software Version"})
 
@@ -49,15 +55,15 @@ class Sample(Base):
         },
     )
     validated = Column(Boolean, info={"verbose_name": "Validated"}, default=False)
-    # ONE-TO_MANY: sample -> authors
-    authors = relationship(
-        "Author",
-        cascade="all, delete-orphan",
-        passive_deletes=True,
-        back_populates="sample",
-        lazy="subquery",
-    )
-    # ONE-TO-ONE: sample -> recipe
+    # # ONE-TO_MANY: sample -> authors
+    # authors = relationship(
+    #     "Author",
+    #     cascade="all, delete-orphan",
+    #     passive_deletes=True,
+    #     back_populates="sample",
+    #     lazy="subquery",
+    # )
+    # # ONE-TO-ONE: sample -> recipe
     recipe = relationship(
         "Recipe",
         uselist=False,
@@ -66,82 +72,85 @@ class Sample(Base):
         back_populates="sample",
         lazy="subquery",
     )
-    # ONE-TO-MANY: sample -> properties
-    properties = relationship(
-        "Properties",
-        uselist=False,
-        cascade="all, delete-orphan",
-        passive_deletes=True,
-        back_populates="sample",
-        lazy="subquery",
-    )
-    # ONE-TO-MANY: sample -> raman_files
-    raman_files = relationship(
-        "RamanFile",
-        cascade="all, delete-orphan",
-        passive_deletes=True,
-        back_populates="sample",
-        lazy="subquery",
-    )
+    # MANY-TO-ONE: sample->recipe
+    recipe = relationship("Recipe", back_populates="samples")
 
-    raman_analysis = relationship(
-        "RamanSet",
-        uselist=False,
-        cascade="all, delete-orphan",
-        passive_deletes=True,
-        back_populates="sample",
-        lazy="subquery",
-    )
-    # ONE-TO-MANY: sample -> sem_files
-    sem_files = relationship(
-        "SemFile",
-        cascade="all, delete-orphan",
-        passive_deletes=True,
-        single_parent=True,
-        foreign_keys="SemFile.sample_id",
-        back_populates="sample",
-        lazy="subquery",
-    )
-    # Defining the foreign key constraint explictly (as below) prevents a sem_file id from
-    # a different sample from being assigned to the primary_sem_file_id column.
-    __table_args__ = (
-        ForeignKeyConstraint(
-            ["id", "primary_sem_file_id"],
-            ["sem_file.sample_id", "sem_file.id"],
-            use_alter=True,
-            ondelete="CASCADE",
-            name="fk_primary_sem_file",
-        ),
-        ForeignKeyConstraint(
-            [software_name, software_version],
-            ["software.name", "software.version"],
-            name="fk_gresq_software",
-        ),
-    )
+    # # ONE-TO-MANY: sample -> properties
+    # properties = relationship(
+    #     "Properties",
+    #     uselist=False,
+    #     cascade="all, delete-orphan",
+    #     passive_deletes=True,
+    #     back_populates="sample",
+    #     lazy="subquery",
+    # )
+    # # ONE-TO-MANY: sample -> raman_files
+    # raman_files = relationship(
+    #     "RamanFile",
+    #     cascade="all, delete-orphan",
+    #     passive_deletes=True,
+    #     back_populates="sample",
+    #     lazy="subquery",
+    # )
 
-    primary_sem_file = relationship(
-        "SemFile",
-        primaryjoin="Sample.primary_sem_file_id==SemFile.id",
-        foreign_keys=primary_sem_file_id,
-        uselist=False,
-        post_update=True,
-        lazy="subquery",
-    )
+    # raman_analysis = relationship(
+    #     "RamanSet",
+    #     uselist=False,
+    #     cascade="all, delete-orphan",
+    #     passive_deletes=True,
+    #     back_populates="sample",
+    #     lazy="subquery",
+    # )
+    # # ONE-TO-MANY: sample -> sem_files
+    # sem_files = relationship(
+    #     "SemFile",
+    #     cascade="all, delete-orphan",
+    #     passive_deletes=True,
+    #     single_parent=True,
+    #     foreign_keys="SemFile.sample_id",
+    #     back_populates="sample",
+    #     lazy="subquery",
+    # )
+    # # Defining the foreign key constraint explictly (as below) prevents a sem_file id from
+    # # a different sample from being assigned to the primary_sem_file_id column.
+    # __table_args__ = (
+    #     ForeignKeyConstraint(
+    #         ["id", "primary_sem_file_id"],
+    #         ["sem_file.sample_id", "sem_file.id"],
+    #         use_alter=True,
+    #         ondelete="CASCADE",
+    #         name="fk_primary_sem_file",
+    #     ),
+    #     ForeignKeyConstraint(
+    #         [software_name, software_version],
+    #         ["software.name", "software.version"],
+    #         name="fk_gresq_software",
+    #     ),
+    # )
 
-    @hybrid_property
-    def primary_sem_analysis(self):
-        return self.primary_sem_file.default_analysis
+    # primary_sem_file = relationship(
+    #     "SemFile",
+    #     primaryjoin="Sample.primary_sem_file_id==SemFile.id",
+    #     foreign_keys=primary_sem_file_id,
+    #     uselist=False,
+    #     post_update=True,
+    #     lazy="subquery",
+    # )
 
-    @hybrid_property
-    def author_last_names(self):
-        return ", ".join(sorted([a.last_name for a in self.authors if a.last_name]))
+    # @hybrid_property
+    # def primary_sem_analysis(self):
+    #     return self.primary_sem_file.default_analysis
 
-    def json_encodable(self):
-        return {
-            "primary_key": self.id,
-            "material_name": self.material_name,
-            "experiment_date": self.experiment_date.timetuple(),
-            "authors": [s.json_encodable() for s in self.authors],
-            "recipe": self.recipe.json_encodable(),
-            "properties": self.properties.json_encodable(),
-        }
+    # @hybrid_property
+    # def author_last_names(self):
+    #     return ", ".join(sorted([a.last_name for a in self.authors if a.last_name]))
+
+    # def json_encodable(self):
+    #     return {
+    #         "primary_key": self.id,
+    #         "material_name": self.material_name,
+    #         "experiment_date": self.experiment_date.timetuple(),
+    #         "authors": [s.json_encodable() for s in self.authors],
+    #         "recipe": self.recipe.json_encodable(),
+    #         "properties": self.properties.json_encodable(),
+    #     }
