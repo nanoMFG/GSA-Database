@@ -36,7 +36,7 @@ class PreparationStepFactory(factory.alchemy.SQLAlchemyModelFactory):
     hydrogen_flow_rate = factory.Faker(
         "pyfloat", positive=False, min_value=0.0, max_value=100.0
     )
-    carbon_source = factory.Iterator(PreparationStep.carbon_source.info["choices"])
+    #carbon_source = factory.Iterator(PreparationStep.carbon_source.info["choices"])
     carbon_source_flow_rate = factory.Faker(
         "pyfloat", positive=False, min_value=0.0, max_value=100.0
     )
