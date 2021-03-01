@@ -100,7 +100,7 @@ class Sample(Base):
     recipe = relationship("Recipe", back_populates="samples")
 
     # MANY-TO-ONE: samples->environment_conditions
-    environment_conditions = relationship("Environment Conditions", back_populates="samples")
+    environment_conditions = relationship("EnvironmentConditions", back_populates="samples")
 
     # MANY-TO-ONE: samples->substrate
     substrate = relationship("Substrate", back_populates="samples")
