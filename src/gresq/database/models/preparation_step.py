@@ -17,17 +17,20 @@ class PreparationStep(Base):
 
     # Basic integer primary key
     id = Column(Integer, primary_key=True, info={"verbose_name": "ID"})
+
+    # The recipe can be the same for multiple different preparation steps
     recipe_id = Column(
         Integer,
         ForeignKey("recipe.id", ondelete="CASCADE"),
         info={"verbose_name": "Recipe ID"},
         index=True,
     )
-    # MANY-TO-ONE: preparation_step->recipe
+
+    # MANY-TO-ONE: preparation_steps->recipe
     #recipe = relationship("Recipe", uselist=False, back_populates="preparation_steps")
     recipe = relationship("Recipe", back_populates="preparation_steps")
 
-    step = Column(Integer)
+    step = Column(Integer) # Should this be renamed to "step_number"?
     name = Column(
         String(16),
         info={
@@ -43,6 +46,7 @@ class PreparationStep(Base):
             "std_unit": "min",
             "conversions": {"min": 1, "sec": 1 / 60.0, "hrs": 60},
             "required": True,
+            "tooltip": "Duration of the step",
         },
     )
     furnace_temperature = Column(
@@ -52,6 +56,7 @@ class PreparationStep(Base):
             "std_unit": "C",
             "conversions": {"C": 1},
             "required": True,
+            "tooltip": "Temperature of the furnace during the step",
         },
     )
     furnace_pressure = Column(
@@ -66,6 +71,7 @@ class PreparationStep(Base):
                 "mTorr": 1.0e-3,
             },
             "required": True,
+            "tooltip": "Pressure in the furnace during the step",
         },
     )
     sample_location = Column(
@@ -85,6 +91,7 @@ class PreparationStep(Base):
             "std_unit": "sccm",
             "conversions": {"sccm": 1},
             "required": False,
+            "tooltip": "Leave blank if helium was not used",
         },
     )
     hydrogen_flow_rate = Column(
@@ -94,14 +101,7 @@ class PreparationStep(Base):
             "std_unit": "sccm",
             "conversions": {"sccm": 1},
             "required": False,
-        },
-    )
-    carbon_source = Column(
-        String(16),
-        info={
-            "verbose_name": "Carbon Source",
-            "choices": ["CH4", "C2H4", "C2H2", "C6H6"],
-            "required": True,
+            "tooltip": "Leave blank if hydrogen was not used",
         },
     )
     carbon_source_flow_rate = Column(
@@ -120,6 +120,7 @@ class PreparationStep(Base):
             "std_unit": "sccm",
             "conversions": {"sccm": 1},
             "required": False,
+            "tooltip": "Leave blank if argon was not used",
         },
     )
     cooling_rate = Column(

@@ -24,8 +24,8 @@ class Furnace(Base):
     # Basic integer primary key
     id = Column(Integer, primary_key=True, info={"verbose_name": "ID"})
 
-    # MANY-TO-ONE: furnace->sample
-    sample = relationship("Sample", back_populates="Furnace")
+    # ONE-TO-MANY: furnace->sample
+    samples = relationship("Sample", back_populates="furnace")
 
     tube_diameter = Column(
         Float,
@@ -53,17 +53,17 @@ class Furnace(Base):
             "std_unit": "mm",
             "conversions": {"mm": 1, "inches": 25.4},
             "required": False,
-            "tooltip": "Length of the furnace tube",
+            "tooltip": "Full length of the furnace tube",
         },
     )
-    # length_of_heated_region = Column(
-    #     Float,
-    #     info={
-    #         "verbose_name": "Length of heated region",
-    #         "std_unit": "mm",
-    #         "conversions": {"inches": 25.4, "mm": 1},
-    #         "required": False,
-    #         "tooltip": "Length of the part of the furnace with the growth temperature",
-    #     },
-    # )
+    length_of_heated_region = Column(
+        Float,
+        info={
+            "verbose_name": "Length of heated region",
+            "std_unit": "mm",
+            "conversions": {"mm": 1, "inches": 25.4},
+            "required": False,
+            "tooltip": "Length of the heated region of the tube",
+        },
+    )
     

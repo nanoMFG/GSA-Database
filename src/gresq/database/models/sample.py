@@ -31,12 +31,36 @@ class Sample(Base):
         autoincrement="ignore_fk",
         info={"verbose_name": "ID"},
     )
+
+    # The recipe can be the same for multiple different samples
     recipe_id = Column(
         Integer,
         ForeignKey("recipe.id", ondelete="CASCADE"),
         info={"verbose_name": "Recipe ID"},
         index=True,
     )
+    # The environment conditions can be the same for multiple different samples
+    environment_conditions_id = Column(
+        Integer,
+        ForeignKey("environment_conditions.id", ondelete="CASCADE"),
+        info={"verbose_name": "Environment Conditions ID"},
+        index=True,
+    )
+    # The substrate can be the same for multiple different samples
+    substrate_id = Column(
+        Integer,
+        ForeignKey("substrate.id", ondelete="CASCADE"),
+        info={"verbose_name": "Substrate ID"},
+        index=True,
+    )
+    # The furnace can be the same for multiple different samples
+    furnace_id = Column(
+        Integer,
+        ForeignKey("furnace.id", ondelete="CASCADE"),
+        info={"verbose_name": "Furnace ID"},
+        index=True,
+    )
+
     software_name = Column(String(20), info={"verbose_name": "Analysis Software"})
     software_version = Column(String(20), info={"verbose_name": "Software Version"})
 
@@ -64,16 +88,25 @@ class Sample(Base):
     #     lazy="subquery",
     # )
     # # ONE-TO-ONE: sample -> recipe
-    recipe = relationship(
-        "Recipe",
-        uselist=False,
-        cascade="all, delete-orphan",
-        passive_deletes=True,
-        back_populates="sample",
-        lazy="subquery",
-    )
-    # MANY-TO-ONE: sample->recipe
+    # recipe = relationship(
+    #     "Recipe",
+    #     uselist=False,
+    #     cascade="all, delete-orphan",
+    #     passive_deletes=True,
+    #     back_populates="sample",
+    #     lazy="subquery",
+    # )
+    # MANY-TO-ONE: samples->recipe
     recipe = relationship("Recipe", back_populates="samples")
+
+    # MANY-TO-ONE: samples->environment_conditions
+    environment_conditions = relationship("Environment Conditions", back_populates="samples")
+
+    # MANY-TO-ONE: samples->substrate
+    substrate = relationship("Substrate", back_populates="samples")
+
+    # MANY-TO-ONE: samples->furnace
+    furnace = relationship("Furnace", back_populates="samples")
 
     # # ONE-TO-MANY: sample -> properties
     # properties = relationship(

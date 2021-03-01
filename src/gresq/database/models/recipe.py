@@ -11,6 +11,22 @@ class Recipe(Base):
     # Basic integer primary key
     id = Column(Integer, primary_key=True, info={"verbose_name": "ID"})
 
+    # ONE-TO-MANY: recipe -> preparation_step
+    preparation_steps = relationship(
+        "PreparationStep",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+        back_populates="recipe",
+    )
+
+    # ONE-TO-MANY: recipe -> sample
+    samples = relationship(
+        "Sample",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+        back_populates="recipe",
+    )
+
     carbon_source = Column(
         String(16),
         info={
@@ -19,20 +35,20 @@ class Recipe(Base):
             "required": True,
         },
     )
-
-    # ONE-TO-MANY: recipe -> preparation_step
-    preparation_steps = relationship(
-        "PreparationStep",
-        cascade="all, delete-orphan",
-        passive_deletes=True,
-        back_populates="recipe",
-    )
-    # ONE-TO-MANY: recipe -> sample
-    samples = relationship(
-        "Sample",
-        cascade="all, delete-orphan",
-        passive_deletes=True,
-        back_populates="recipe",
+    base_pressure = Column(
+        Float,
+        info={
+            "verbose_name": "Base Pressure",
+            "std_unit": "Torr",
+            "conversions": {
+                "Torr": 1,
+                "Pa": 1 / 133.322,
+                "mbar": 1 / 1.33322,
+                "mTorr": 1.0e-3,
+            },
+            "required": True,
+            "tooltip": "Pressure inside the tube before starting the flow of gases",
+        },
     )
 
     @hybrid_property

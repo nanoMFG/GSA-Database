@@ -26,7 +26,7 @@ class Substrate(Base):
     id = Column(Integer, primary_key=True, info={"verbose_name": "ID"})
     
     # MANY-TO-ONE: substrate->sample
-    sample = relationship("Sample", back_populates="Substrate")
+    samples = relationship("Sample", back_populates="substrate")
 
     catalyst = Column(
         String(16),
