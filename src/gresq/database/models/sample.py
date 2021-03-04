@@ -11,6 +11,7 @@ from sqlalchemy.orm import relationship, backref
 from sqlalchemy.ext.hybrid import hybrid_property
 
 from gresq.database import Base
+from gresq.database.models.author import sample_association_table
 
 
 class Sample(Base):
@@ -24,6 +25,8 @@ class Sample(Base):
     """
 
     __tablename__ = "sample"
+    __table_args__ = {'extend_existing': True}
+
 
     id = Column(
         Integer,
@@ -66,7 +69,7 @@ class Sample(Base):
 
     primary_sem_file_id = Column(Integer, index=True)
 
-    nanohub_userid = Column(Integer, info={"verbose_name": "Nanohub Submitter User ID"})
+    submitted_by = Column(Integer, ForeignKey('author.id'), info={"verbose_name": "Submitted By"})
     experiment_date = Column(
         Date, info={"verbose_name": "Experiment Date", "required": True}
     )
@@ -79,6 +82,8 @@ class Sample(Base):
         },
     )
     validated = Column(Boolean, info={"verbose_name": "Validated"}, default=False)
+    authors = relationship("Author", secondary=sample_association_table, back_populates="authored_samples")
+
     # # ONE-TO_MANY: sample -> authors
     # authors = relationship(
     #     "Author",
