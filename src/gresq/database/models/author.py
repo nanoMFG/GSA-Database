@@ -47,5 +47,6 @@ class Author(Base):
     def full_name_and_institution(self):
         return "%s, %s   (%s)" % (self.last_name, self.first_name, self.institution)
     
+    
 
 
