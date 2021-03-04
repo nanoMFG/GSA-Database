@@ -84,6 +84,10 @@ class Sample(Base):
     validated = Column(Boolean, info={"verbose_name": "Validated"}, default=False)
     authors = relationship("Author", secondary=sample_association_table, back_populates="authored_samples")
 
+    # Just an experiment for a author related hybrid property. Comment if it's a source of problems.
+    @hybrid_property
+    def authors_string(self):
+        return [a.author_last_names for a in self.authors]
     # # ONE-TO_MANY: sample -> authors
     # authors = relationship(
     #     "Author",
