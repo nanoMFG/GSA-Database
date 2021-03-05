@@ -111,15 +111,16 @@ class Experiment(Base):
     # MANY-TO-ONE: experiments->furnace
     furnace = relationship("Furnace", back_populates="experiments")
 
-    # # ONE-TO-MANY: sample -> properties
-    # properties = relationship(
-    #     "Properties",
-    #     uselist=False,
-    #     cascade="all, delete-orphan",
-    #     passive_deletes=True,
-    #     back_populates="sample",
-    #     lazy="subquery",
-    # )
+    # ONE-TO-ONE: sample -> properties
+    properties = relationship(
+        "Properties",
+        uselist=False,
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+        back_populates="experiment",
+        lazy="subquery",
+    )
+
     # ONE-TO-MANY: experiment -> raman_files
     raman_files = relationship(
         "RamanFile",

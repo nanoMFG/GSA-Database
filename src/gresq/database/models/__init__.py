@@ -10,3 +10,4 @@ from gresq.database.models.sem_analysis import SemAnalysis
 from gresq.database.models.software import Software
 from gresq.database.models.raman_file import RamanFile
 from gresq.database.models.raman_spectrum import RamanSpectrum
+from gresq.database.models.properties import Properties
