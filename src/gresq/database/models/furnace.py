@@ -24,8 +24,8 @@ class Furnace(Base):
     # Basic integer primary key
     id = Column(Integer, primary_key=True, info={"verbose_name": "ID"})
 
-    # ONE-TO-MANY: furnace->sample
-    samples = relationship("Sample", back_populates="furnace")
+    # ONE-TO-MANY: furnace->experiment
+    experiments = relationship("Experiment", back_populates="furnace")
 
     tube_diameter = Column(
         Float,

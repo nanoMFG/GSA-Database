@@ -18,7 +18,7 @@ class EnvironmentConditions(Base):
     id = Column(Integer, primary_key=True, info={"verbose_name": "ID"})
 
     # MANY-TO-ONE: environment_conditions->sample
-    samples = relationship("Sample", uselist=False, back_populates="environment_conditions")
+    experiments = relationship("Experiment", back_populates="environment_conditions")
 
     dew_point = Column(
         Float,

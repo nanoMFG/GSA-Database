@@ -11,7 +11,7 @@ from gresq.database import Base, class_registry
 
 ExperimentToAuthorAssociation = Table('EXP_TO_ATHR_ASSCTN', Base.metadata,
     Column('author_id', Integer, ForeignKey('author.id')),
-    Column('sample_id', Integer, ForeignKey('sample.id'))
+    Column('experiment_id', Integer, ForeignKey('experiment.id'))
 )
 
 class Author(Base):
@@ -38,11 +38,11 @@ class Author(Base):
     nanohub_userid = Column(
         Integer, info={"verbose_name": "nanoHub Submitter User ID"}
     )
-    # Collection of samples submitted by this author
-    submitted_samples = relationship("Sample")
+    # Collection of experiments submitted by this author
+    submitted_experiments = relationship("Experiment")
 
-    # Collection of samples associated with this author 
-    authored_samples = relationship("Sample", secondary="EXP_TO_ATHR_ASSCTN", back_populates="authors")
+    # Collection of experiments associated with this author 
+    authored_experiments = relationship("Experiment", secondary="EXP_TO_ATHR_ASSCTN", back_populates="authors")
     
     @hybrid_property
     def full_name_and_institution(self):

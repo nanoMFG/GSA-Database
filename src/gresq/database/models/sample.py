@@ -14,7 +14,7 @@ from gresq.database import Base
 from gresq.database.models.author import ExperimentToAuthorAssociation
 
 
-class Sample(Base):
+class Experiment(Base):
     """[summary]
     
     Args:
@@ -24,7 +24,6 @@ class Sample(Base):
         [type]: [description]
     """
 
-    __tablename__ = "sample"
     __table_args__ = {'extend_existing': True}
 
 
@@ -35,28 +34,28 @@ class Sample(Base):
         info={"verbose_name": "ID"},
     )
 
-    # The recipe can be the same for multiple different samples
+    # The recipe can be the same for multiple different experiments
     recipe_id = Column(
         Integer,
         ForeignKey("recipe.id", ondelete="CASCADE"),
         info={"verbose_name": "Recipe ID"},
         index=True,
     )
-    # The environment conditions can be the same for multiple different samples
+    # The environment conditions can be the same for multiple different experiments
     environment_conditions_id = Column(
         Integer,
         ForeignKey("environment_conditions.id", ondelete="CASCADE"),
         info={"verbose_name": "Environment Conditions ID"},
         index=True,
     )
-    # The substrate can be the same for multiple different samples
+    # The substrate can be the same for multiple different experiments
     substrate_id = Column(
         Integer,
         ForeignKey("substrate.id", ondelete="CASCADE"),
         info={"verbose_name": "Substrate ID"},
         index=True,
     )
-    # The furnace can be the same for multiple different samples
+    # The furnace can be the same for multiple different experiments
     furnace_id = Column(
         Integer,
         ForeignKey("furnace.id", ondelete="CASCADE"),
@@ -73,10 +72,12 @@ class Sample(Base):
 
     # The user/author that submitted this experiment
     submitted_by = Column(Integer, ForeignKey('author.id'), info={"verbose_name": "Submitted By"})
-    # The data the experiment was conducted
+    
+    # The date the experiment was conducted
     experiment_date = Column(
         Date, info={"verbose_name": "Experiment Date", "required": True}
     )
+    
     # The material grown
     material_name = Column(
         String(32),
@@ -86,27 +87,29 @@ class Sample(Base):
             "required": True,
         },
     )
+
     # Status of experiment valdation
     validated = Column(Boolean, info={"verbose_name": "Validated"}, default=False)
+    
     # The authors that conducted the experiment
-    authors = relationship("Author", secondary="EXP_TO_ATHR_ASSCTN", back_populates="authored_samples")
+    authors = relationship("Author", secondary="EXP_TO_ATHR_ASSCTN", back_populates="authored_experiments")
 
     # Just an experiment for a author related hybrid property. Comment if it's a source of problems.
     @hybrid_property
     def authors_string(self):
         return [a.author_last_names for a in self.authors]
     
-    # MANY-TO-ONE: samples->recipe
-    recipe = relationship("Recipe", back_populates="samples")
+    # MANY-TO-ONE: experiments->recipe
+    recipe = relationship("Recipe", back_populates="experiments")
 
-    # MANY-TO-ONE: samples->environment_conditions
-    environment_conditions = relationship("EnvironmentConditions", back_populates="samples")
+    # MANY-TO-ONE: experiments->environment_conditions
+    environment_conditions = relationship("EnvironmentConditions", back_populates="experiments")
 
-    # MANY-TO-ONE: samples->substrate
-    substrate = relationship("Substrate", back_populates="samples")
+    # MANY-TO-ONE: experiments->substrate
+    substrate = relationship("Substrate", back_populates="experiments")
 
-    # MANY-TO-ONE: samples->furnace
-    furnace = relationship("Furnace", back_populates="samples")
+    # MANY-TO-ONE: experiments->furnace
+    furnace = relationship("Furnace", back_populates="experiments")
 
     # # ONE-TO-MANY: sample -> properties
     # properties = relationship(
@@ -140,16 +143,17 @@ class Sample(Base):
         cascade="all, delete-orphan",
         passive_deletes=True,
         single_parent=True,
-        foreign_keys="SemFile.sample_id",
-        back_populates="sample",
+        foreign_keys="SemFile.experiment_id",
+        back_populates="experiment",
         lazy="subquery",
     )
+
     # Defining the foreign key constraint explicitly (as below) prevents a sem_file id from
-    # a different sample from being assigned to the primary_sem_file_id column.
+    # a different experiment from being assigned to the primary_sem_file_id column.
     __table_args__ = (
         ForeignKeyConstraint(
             ["id", "primary_sem_file_id"],
-            ["sem_file.sample_id", "sem_file.id"],
+            ["sem_file.experiment_id", "sem_file.id"],
             use_alter=True,
             ondelete="CASCADE",
             name="fk_primary_sem_file",
@@ -163,7 +167,7 @@ class Sample(Base):
 
     primary_sem_file = relationship(
         "SemFile",
-        primaryjoin="Sample.primary_sem_file_id==SemFile.id",
+        primaryjoin="Experiment.primary_sem_file_id==SemFile.id",
         foreign_keys=primary_sem_file_id,
         uselist=False,
         post_update=True,
