@@ -11,7 +11,7 @@ from sqlalchemy.orm import relationship, backref
 from sqlalchemy.ext.hybrid import hybrid_property
 
 from gresq.database import Base
-from gresq.database.models.author import sample_association_table
+from gresq.database.models.author import ExperimentToAuthorAssociation
 
 
 class Sample(Base):
@@ -63,16 +63,21 @@ class Sample(Base):
         info={"verbose_name": "Furnace ID"},
         index=True,
     )
+    ## The name of the analysis software
+    #software_name = Column(String(20), info={"verbose_name": "Analysis Software"})
+    ## The version of the analysis software
+    #software_version = Column(String(20), info={"verbose_name": "Software Version"})
 
-    software_name = Column(String(20), info={"verbose_name": "Analysis Software"})
-    software_version = Column(String(20), info={"verbose_name": "Software Version"})
-
+    # The primary SEM file associated with this experiment
     primary_sem_file_id = Column(Integer, index=True)
 
+    # The user/author that submitted this experiment
     submitted_by = Column(Integer, ForeignKey('author.id'), info={"verbose_name": "Submitted By"})
+    # The data the experiment was conducted
     experiment_date = Column(
         Date, info={"verbose_name": "Experiment Date", "required": True}
     )
+    # The material grown
     material_name = Column(
         String(32),
         info={
@@ -81,30 +86,16 @@ class Sample(Base):
             "required": True,
         },
     )
+    # Status of experiment valdation
     validated = Column(Boolean, info={"verbose_name": "Validated"}, default=False)
-    authors = relationship("Author", secondary=sample_association_table, back_populates="authored_samples")
+    # The authors that conducted the experiment
+    authors = relationship("Author", secondary="EXP_TO_ATHR_ASSCTN", back_populates="authored_samples")
 
     # Just an experiment for a author related hybrid property. Comment if it's a source of problems.
     @hybrid_property
     def authors_string(self):
         return [a.author_last_names for a in self.authors]
-    # # ONE-TO_MANY: sample -> authors
-    # authors = relationship(
-    #     "Author",
-    #     cascade="all, delete-orphan",
-    #     passive_deletes=True,
-    #     back_populates="sample",
-    #     lazy="subquery",
-    # )
-    # # ONE-TO-ONE: sample -> recipe
-    # recipe = relationship(
-    #     "Recipe",
-    #     uselist=False,
-    #     cascade="all, delete-orphan",
-    #     passive_deletes=True,
-    #     back_populates="sample",
-    #     lazy="subquery",
-    # )
+    
     # MANY-TO-ONE: samples->recipe
     recipe = relationship("Recipe", back_populates="samples")
 
@@ -143,45 +134,45 @@ class Sample(Base):
     #     back_populates="sample",
     #     lazy="subquery",
     # )
-    # # ONE-TO-MANY: sample -> sem_files
-    # sem_files = relationship(
-    #     "SemFile",
-    #     cascade="all, delete-orphan",
-    #     passive_deletes=True,
-    #     single_parent=True,
-    #     foreign_keys="SemFile.sample_id",
-    #     back_populates="sample",
-    #     lazy="subquery",
-    # )
-    # # Defining the foreign key constraint explictly (as below) prevents a sem_file id from
-    # # a different sample from being assigned to the primary_sem_file_id column.
-    # __table_args__ = (
-    #     ForeignKeyConstraint(
-    #         ["id", "primary_sem_file_id"],
-    #         ["sem_file.sample_id", "sem_file.id"],
-    #         use_alter=True,
-    #         ondelete="CASCADE",
-    #         name="fk_primary_sem_file",
-    #     ),
-    #     ForeignKeyConstraint(
-    #         [software_name, software_version],
-    #         ["software.name", "software.version"],
-    #         name="fk_gresq_software",
-    #     ),
-    # )
+    # ONE-TO-MANY: sample -> sem_files
+    sem_files = relationship(
+        "SemFile",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+        single_parent=True,
+        foreign_keys="SemFile.sample_id",
+        back_populates="sample",
+        lazy="subquery",
+    )
+    # Defining the foreign key constraint explicitly (as below) prevents a sem_file id from
+    # a different sample from being assigned to the primary_sem_file_id column.
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["id", "primary_sem_file_id"],
+            ["sem_file.sample_id", "sem_file.id"],
+            use_alter=True,
+            ondelete="CASCADE",
+            name="fk_primary_sem_file",
+        ),
+        # ForeignKeyConstraint(
+        #     [software_name, software_version],
+        #     ["software.name", "software.version"],
+        #     name="fk_gresq_software",
+        # ),
+    )
 
-    # primary_sem_file = relationship(
-    #     "SemFile",
-    #     primaryjoin="Sample.primary_sem_file_id==SemFile.id",
-    #     foreign_keys=primary_sem_file_id,
-    #     uselist=False,
-    #     post_update=True,
-    #     lazy="subquery",
-    # )
+    primary_sem_file = relationship(
+        "SemFile",
+        primaryjoin="Sample.primary_sem_file_id==SemFile.id",
+        foreign_keys=primary_sem_file_id,
+        uselist=False,
+        post_update=True,
+        lazy="subquery",
+    )
 
-    # @hybrid_property
-    # def primary_sem_analysis(self):
-    #     return self.primary_sem_file.default_analysis
+    @hybrid_property
+    def primary_sem_analysis(self):
+        return self.primary_sem_file.default_analysis
 
     # @hybrid_property
     # def author_last_names(self):

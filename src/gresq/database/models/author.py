@@ -9,9 +9,9 @@ from sqlalchemy.dialects.postgresql import *
 
 from gresq.database import Base, class_registry
 
-sample_association_table = Table('sample_association', Base.metadata,
+ExperimentToAuthorAssociation = Table('EXP_TO_ATHR_ASSCTN', Base.metadata,
     Column('author_id', Integer, ForeignKey('author.id')),
-    Column('sample_name', Integer, ForeignKey('sample.id'))
+    Column('sample_id', Integer, ForeignKey('sample.id'))
 )
 
 class Author(Base):
@@ -23,8 +23,6 @@ class Author(Base):
     Returns:
         [type]: [description]
     """
-
-    __tablename__ = "author"
 
     id = Column(Integer, primary_key=True, info={"verbose_name": "ID"})
 
@@ -38,10 +36,13 @@ class Author(Base):
         String(64), info={"verbose_name": "Institution", "required": False}
     )
     nanohub_userid = Column(
-        Integer, info={"verbose_name": "Nanohub Submitter User ID"}
+        Integer, info={"verbose_name": "nanoHub Submitter User ID"}
     )
+    # Collection of samples submitted by this author
     submitted_samples = relationship("Sample")
-    authored_samples = relationship("Sample", secondary=sample_association_table, back_populates="authors")
+
+    # Collection of samples associated with this author 
+    authored_samples = relationship("Sample", secondary="EXP_TO_ATHR_ASSCTN", back_populates="authors")
     
     @hybrid_property
     def full_name_and_institution(self):
