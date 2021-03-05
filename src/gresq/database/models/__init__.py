@@ -8,3 +8,5 @@ from gresq.database.models.author import Author
 from gresq.database.models.sem_file import SemFile
 from gresq.database.models.sem_analysis import SemAnalysis
 from gresq.database.models.software import Software
+from gresq.database.models.raman_file import RamanFile
+from gresq.database.models.raman_spectrum import RamanSpectrum

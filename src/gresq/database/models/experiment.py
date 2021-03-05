@@ -120,24 +120,24 @@ class Experiment(Base):
     #     back_populates="sample",
     #     lazy="subquery",
     # )
-    # # ONE-TO-MANY: sample -> raman_files
-    # raman_files = relationship(
-    #     "RamanFile",
-    #     cascade="all, delete-orphan",
-    #     passive_deletes=True,
-    #     back_populates="sample",
-    #     lazy="subquery",
-    # )
+    # ONE-TO-MANY: experiment -> raman_files
+    raman_files = relationship(
+        "RamanFile",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+        back_populates="experiment",
+        lazy="subquery",
+    )
 
     # raman_analysis = relationship(
     #     "RamanSet",
     #     uselist=False,
     #     cascade="all, delete-orphan",
     #     passive_deletes=True,
-    #     back_populates="sample",
+    #     back_populates="experiment",
     #     lazy="subquery",
     # )
-    # ONE-TO-MANY: sample -> sem_files
+    # ONE-TO-MANY: experiment -> sem_files
     sem_files = relationship(
         "SemFile",
         cascade="all, delete-orphan",
