@@ -13,7 +13,7 @@ class SemFileFactory(factory.alchemy.SQLAlchemyModelFactory):
         sqlalchemy_session = dal.Session()
         sqlalchemy_session_persistence = "commit"
 
-    sample = factory.SubFactory("test.database.factories.SampleFactory", sem_files=None)
+    sample = factory.SubFactory("test.database.factories.ExperimentFactory", sem_files=None)
     analyses = factory.RelatedFactoryList(
         "test.database.factories.SemAnalysisFactory", "sem_file", size=3
     )

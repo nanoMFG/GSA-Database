@@ -8,3 +8,4 @@ from .raman_spectrum_factory import RamanSpectrumFactory
 from .sem_analysis_factory import SemAnalysisFactory
 from .sem_file_factory import SemFileFactory
 from .software_factory import SoftwareFactory
+from .furnace_factory import FurnaceFactory
