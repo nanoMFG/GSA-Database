@@ -7,7 +7,7 @@ import pytest
 
 from gresq.database import dal, Base
 from gresq.database.models import Recipe
-from test.database.factories import RecipeFactory, PreparationStepFactory, AuthorFactory
+from test.database.factories import RecipeFactory, PreparationStepFactory, AuthorFactory, PropertiesFactory, FurnaceFactory
 
 #Make an option
 
@@ -95,8 +95,28 @@ def recipe(persistdb, dropdb):
 @pytest.fixture(scope="class")
 def author(persistdb, dropdb):
     AuthorFactory._meta.sqlalchemy_session_persistence = persistdb
-    authors = RecipeFactory.create_batch(5)
+    authors = AuthorFactory.create_batch(5)
     yield authors
+    if dropdb:
+        sess = dal.Session()
+        sess.close()
+        Base.metadata.drop_all(bind=dal.engine)
+
+# @pytest.fixture(scope="class")
+# def furnace(persistdb, dropdb):
+#     FurnaceFactory._meta.sqlalchemy_session_persistence = persistdb
+#     furnaces = FurnaceFactory.create_batch(5)
+#     yield furnaces
+#     if dropdb:
+#         sess = dal.Session()
+#         sess.close()
+#         Base.metadata.drop_all(bind=dal.engine)
+
+@pytest.fixture(scope="class")
+def properties(persistdb, dropdb):
+    PropertiesFactory._meta.sqlalchemy_session_persistence = persistdb
+    properties = PropertiesFactory.create()
+    yield properties
     if dropdb:
         sess = dal.Session()
         sess.close()

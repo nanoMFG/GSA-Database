@@ -12,19 +12,19 @@ class PropertiesFactory(factory.alchemy.SQLAlchemyModelFactory):
         sqlalchemy_session = dal.Session()
         sqlalchemy_session_persistence = "commit"
 
-    sample = factory.SubFactory(
-        "test.database.factories.SampleFactory", properties=None
+    experiment = factory.SubFactory(
+        "test.database.factories.ExperimentFactory", properties=None
     )
 
     average_thickness_of_growth = factory.Faker(
-        "pyfloat", positive=True, min_value=0.0, max_value=10.0
+        "pyfloat", min_value=0.0, max_value=10.0
     )
     standard_deviation_of_growth = factory.Faker(
-        "pyfloat", positive=True, min_value=0.0, max_value=10.0
+        "pyfloat", min_value=0.0, max_value=10.0
     )
     number_of_layers = factory.Faker("pyint", min_value=0, max_value=3, step=1)
     growth_coverage = factory.Faker(
-        "pyfloat", positive=True, min_value=0.0, max_value=100.0
+        "pyfloat", min_value=0.0, max_value=100.0
     )
-    domain_size = factory.Faker("pyfloat", positive=True, min_value=0.0, max_value=10.0)
+    domain_size = factory.Faker("pyfloat", min_value=0.0, max_value=10.0)
     shape = factory.Iterator(Properties.shape.info["choices"])

@@ -35,6 +35,4 @@ class TestAuthorQueries:
         sesh = dal.Session()
         qall = sesh.query(Author).all()
         for row in qall:
-            print(f"id: {row.id}")
-            for author in row.author:
-                print(f"step: {author.institution}")
+            print(f"id: {row.institution}")
