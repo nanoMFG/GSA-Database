@@ -10,3 +10,4 @@ from .sem_file_factory import SemFileFactory
 from .software_factory import SoftwareFactory
 from .furnace_factory import FurnaceFactory
 from .experiment_factory import ExperimentFactory
+from .substrate_factory import SubstrateFactory

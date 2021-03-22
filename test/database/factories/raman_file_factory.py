@@ -13,8 +13,8 @@ class RamanFileFactory(factory.alchemy.SQLAlchemyModelFactory):
         sqlalchemy_session = dal.Session()
         sqlalchemy_session_persistence = "commit"
 
-    sample = factory.SubFactory(
-        "test.database.factories.SampleFactory", raman_files=None
+    experiment = factory.SubFactory(
+        "test.database.factories.ExperimentFactory", raman_files=None
     )
     raman_spectrum = factory.RelatedFactory(
         "test.database.factories.RamanSpectrumFactory", "raman_file"
@@ -22,4 +22,4 @@ class RamanFileFactory(factory.alchemy.SQLAlchemyModelFactory):
 
     filename = factory.Faker("file_name", extension="tif")
     url = factory.Faker("url")
-    wavelength = factory.Faker("pyfloat", positive=True, min_value=0.0, max_value=800.0)
+    wavelength = factory.Faker("pyfloat", positive=False, min_value=0.0, max_value=800.0)

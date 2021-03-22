@@ -35,4 +35,4 @@ class TestAuthorQueries:
         sesh = dal.Session()
         qall = sesh.query(Author).all()
         for row in qall:
-            print(f"id: {row.institution}")
+            print(f"nanahub user id: {row.nanohub_userid}")

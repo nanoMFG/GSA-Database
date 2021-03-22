@@ -30,29 +30,42 @@ class ExperimentFactory(factory.alchemy.SQLAlchemyModelFactory):
     # Status of experiment valdation
     validated = False
     # The authors that conducted the experiment
-    authors = None
-    
-    furnace_id = 5
-    properties = factory.RelatedFactory(
-        "test.database.factories.PropertiesFactory", "experiment"
+    # authors = factory.SubFactory(
+    #     "test.database.factories.AuthorFactory"
+    # )
+    properties = factory.SubFactory(
+        "test.database.factories.PropertiesFactory", experiments=[]
     )
     # # MANY-TO-ONE: experiments->recipe
-    # recipe = None
+    recipe = factory.SubFactory(
+        "test.database.factories.RecipeFactory", experiments=[]
+    )
 
     # # MANY-TO-ONE: experiments->environment_conditions
-    # environment_conditions = None
+    environment_conditions  = factory.SubFactory(
+        "test.database.factories.EnvironmentConditionsFactory", experiments=[]
+    )
 
     # # MANY-TO-ONE: experiments->substrate
-    # substrate = None
+    substrate  = factory.SubFactory(
+        "test.database.factories.SubstrateFactory", experiments=[]
+    )
 
     # # MANY-TO-ONE: experiments->furnace
-    # furnace = None
+    furnace  = factory.SubFactory(
+        "test.database.factories.FurnaceFactory", experiments=[]
+    )
 
     # # ONE-TO-MANY: experiment -> raman_files
-    # raman_files = None
+    raman_files = factory.RelatedFactoryList(
+        "test.database.factories.RamanFileFactory", "experiment", size=3
+    )
 
     # # ONE-TO-MANY: experiment -> sem_files
-    # sem_files = None
-
-    # primary_sem_file = None
+    sem_files = factory.RelatedFactoryList(
+        "test.database.factories.SemFileFactory", "experiment", size=3
+    )
+    primary_sem_file = factory.RelatedFactory(
+        "test.database.factories.SemFileFactory", "experiment"
+    )
    

@@ -19,6 +19,6 @@ class SemAnalysisFactory(factory.alchemy.SQLAlchemyModelFactory):
     mask_url = factory.Faker("url")
     px_per_um = factory.Faker("pyint", min_value=0, max_value=30, step=1)
     growth_coverage = factory.Faker(
-        "pyfloat", positive=True, min_value=0.0, max_value=99.0
+        "pyfloat", positive=False, min_value=0.0, max_value=99.0
     )
     automated = factory.Faker("boolean", chance_of_getting_true=50)
