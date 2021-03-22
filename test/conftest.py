@@ -81,18 +81,10 @@ def recipe(persistdb, dropdb):
     Base.metadata.create_all(bind=dal.engine)
     print("Hey, here come some recipes...")
     # Set persistance for test data
+    ExperimentFactory._meta.sqlalchemy_session_persistence = persistdb
+    experiments = ExperimentFactory.create_batch(10)
     RecipeFactory._meta.sqlalchemy_session_persistence = persistdb
     PreparationStepFactory._meta.sqlalchemy_session_persistence = persistdb
-    ExperimentFactory._meta.sqlalchemy_session_persistence = persistdb
-    EnvironmentConditionsFactory._meta.sqlalchemy_session_persistence = persistdb
-    experiments = ExperimentFactory.create_batch(10)
-    yield experiments
-    FurnaceFactory._meta.sqlalchemy_session_persistence = persistdb
-    furnaces = FurnaceFactory.create_batch(5)
-    PropertiesFactory._meta.sqlalchemy_session_persistence = persistdb
-    properties = PropertiesFactory.create()
-    yield properties
-    yield furnaces
     # Add a batch of recipes
     recipes = RecipeFactory.create_batch(5)
     yield recipes
@@ -126,22 +118,31 @@ def author(persistdb, dropdb):
 #         sess.close()
 #         Base.metadata.drop_all(bind=dal.engine)
 
-# @pytest.fixture(scope="class")
-# def furnace(persistdb, dropdb):
-#     FurnaceFactory._meta.sqlalchemy_session_persistence = persistdb
-#     furnaces = FurnaceFactory.create_batch(5)
-#     yield furnaces
-#     if dropdb:
-#         sess = dal.Session()
-#         sess.close()
-#         Base.metadata.drop_all(bind=dal.engine)
+@pytest.fixture(scope="class")
+def furnace(persistdb, dropdb):
+    Base.metadata.create_all(bind=dal.engine)
+    ExperimentFactory._meta.sqlalchemy_session_persistence = persistdb
+    EnvironmentConditionsFactory._meta.sqlalchemy_session_persistence = persistdb
+    experiments = ExperimentFactory.create_batch(10)
+    FurnaceFactory._meta.sqlalchemy_session_persistence = persistdb
+    furnaces = FurnaceFactory.create_batch(5)
+    yield furnaces
+    if dropdb:
+        sess = dal.Session()
+        sess.close()
+        Base.metadata.drop_all(bind=dal.engine)
 
-# @pytest.fixture(scope="class")
-# def properties(persistdb, dropdb):
-#     PropertiesFactory._meta.sqlalchemy_session_persistence = persistdb
-#     properties = PropertiesFactory.create()
-#     yield properties
-#     if dropdb:
-#         sess = dal.Session()
-#         sess.close()
-#         Base.metadata.drop_all(bind=dal.engine)
+@pytest.fixture(scope="class")
+def properties(persistdb, dropdb):
+    # RecipeFactory._meta.sqlalchemy_session_persistence = persistdb
+    # PreparationStepFactory._meta.sqlalchemy_session_persistence = persistdb
+    # recipes = RecipeFactory.create_batch(5)
+    # ExperimentFactory._meta.sqlalchemy_session_persistence = persistdb
+    # experiments = ExperimentFactory.create_batch(10)
+    PropertiesFactory._meta.sqlalchemy_session_persistence = persistdb
+    properties = PropertiesFactory.create()
+    yield properties
+    if dropdb:
+        sess = dal.Session()
+        sess.close()
+        Base.metadata.drop_all(bind=dal.engine)

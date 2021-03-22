@@ -13,7 +13,7 @@ class PropertiesFactory(factory.alchemy.SQLAlchemyModelFactory):
         sqlalchemy_session_persistence = "commit"
 
     experiment = factory.SubFactory(
-        "test.database.factories.ExperimentFactory", properties=None
+        "test.database.factories.ExperimentFactory", properties=[]
     )
 
     average_thickness_of_growth = factory.Faker(

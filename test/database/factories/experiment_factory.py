@@ -33,8 +33,8 @@ class ExperimentFactory(factory.alchemy.SQLAlchemyModelFactory):
     # authors = factory.SubFactory(
     #     "test.database.factories.AuthorFactory"
     # )
-    properties = factory.SubFactory(
-        "test.database.factories.PropertiesFactory", experiments=[]
+    properties = factory.RelatedFactoryList(
+        "test.database.factories.RamanFileFactory", "experiment", size=3
     )
     # # MANY-TO-ONE: experiments->recipe
     recipe = factory.SubFactory(
@@ -61,11 +61,14 @@ class ExperimentFactory(factory.alchemy.SQLAlchemyModelFactory):
         "test.database.factories.RamanFileFactory", "experiment", size=3
     )
 
-    # # ONE-TO-MANY: experiment -> sem_files
-    sem_files = factory.RelatedFactoryList(
-        "test.database.factories.SemFileFactory", "experiment", size=3
-    )
-    primary_sem_file = factory.RelatedFactory(
-        "test.database.factories.SemFileFactory", "experiment"
-    )
+    # The following lines are a source of bug for "maximum recursion depth exceeded while calling a Python object"
+    # # # ONE-TO-MANY: experiment -> sem_files
+    # sem_files = factory.RelatedFactoryList(
+    #     "test.database.factories.SemFileFactory", "experiment", size=3
+    # )
+
+    # The following gives "Incompatible collection type: None is not list-like"
+    # primary_sem_file = factory.RelatedFactory(
+    #     "test.database.factories.SemFileFactory"
+    # )
    

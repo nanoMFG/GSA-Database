@@ -13,10 +13,14 @@ class RecipeFactory(factory.alchemy.SQLAlchemyModelFactory):
         sqlalchemy_session = dal.Session()
         sqlalchemy_session_persistence = "commit"
 
-    carbon_source = factory.Iterator(Recipe.carbon_source.info["choices"])
+    id = factory.Faker('pyint');
+    carbon_source = "Source"
 
     preparation_steps = factory.RelatedFactoryList(
         "test.database.factories.PreparationStepFactory", "recipe", size=3
+    )
+    experiments = factory.RelatedFactoryList(
+        "test.database.factories.ExperimentFactory", "recipe", size=3
     )
     base_pressure = factory.Faker(
         "pyfloat", positive=True, min_value=80.0, max_value=100.0
