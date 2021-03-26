@@ -41,9 +41,9 @@ class RamanFile(Base):
     # MANY->ONE: raman_files->experiment
     experiment = relationship("Experiment", back_populates="raman_files")
 
-    # ONE->ONE: raman_file->raman_spectrum
-    raman_spectrum = relationship(
-        "RamanSpectrum",
+    # ONE->ONE: raman_file->raman_analysis
+    raman_analysis = relationship(
+        "RamanAnalysis",
         uselist=False,
         cascade="all, delete-orphan",
         passive_deletes=True,
@@ -52,7 +52,7 @@ class RamanFile(Base):
 
     # def __repr__(self):
     #     return self._repr(
-    #         id=self.id, experiment_id=self.experiment_id, raman_spectrum=self.raman_spectrum
+    #         id=self.id, experiment_id=self.experiment_id, raman_analysis=self.raman_analysis
     #     )
 
     def json_encodable(self):
