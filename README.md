@@ -35,3 +35,8 @@ This is an example of how to list things you need to use the software and how to
 ### Running the application
 
 python3 app.py 
+
+### Description of Data Model 
+
+
+
