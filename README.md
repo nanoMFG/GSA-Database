@@ -48,9 +48,9 @@ name and affiliation of contributors.
 
 #### recipe 
 
-base pressure. 
-carbon source.
-preparation step
+- base pressure 
+- carbon source
+- preparation step
   - step name 
   - duration 
   - temperature 
