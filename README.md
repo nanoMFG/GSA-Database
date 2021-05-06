@@ -38,7 +38,7 @@ python3 app.py
 
 ### Description of Gr-ResQ Data Model 
 
-![overview of data model](https://github.com/nanoMFG/GSA-Database/blob/master/data_model.png | width=100)
+<img src="https://github.com/nanoMFG/GSA-Database/blob/master/data_model.png" width="800">
 
 The main entry is an experiment.  Each experiment consists of the following components: 
 
