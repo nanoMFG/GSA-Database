@@ -44,17 +44,49 @@ The main entry is an experiment.  Each experiment consists of the following comp
 
 #### authors 
 
+name and affiliation of contributors.
+
 #### recipe 
+
+base pressure. 
+carbon source.
+preparation step
+  - step name 
+  - duration 
+  - temperature 
+  - furnace pressure 
+  - sample locatioon 
+  - helium flow rate 
+  - H2 flow rate 
+  - C flow rate 
+  - cooling rate 
 
 #### furnace 
 
+tube diameter 
+cross sectional area 
+tube length 
+length of heated region 
+
 #### environmental conditions 
 
+dew point 
+ambient temperature 
+
 #### substrate 
+
+catalyst 
+thickness 
+diameter 
+length 
+surface area 
 
 #### properties 
 
 #### results
+
+SEM images 
+raman spectra 
 
 
 
