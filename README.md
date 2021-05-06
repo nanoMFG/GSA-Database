@@ -40,12 +40,12 @@ python3 app.py
 
 <img src="https://github.com/nanoMFG/GSA-Database/blob/master/data_model.png" width="800">
 
-The main entry is an experiment.  Each experiment consists of the following components: 
+The main entry is an experiment.  Each experiment may consists of the following components. Components marked with an asterisk are required.  
 
 #### authors 
 
-- name and affiliation of contributor
-- affiliation of contributor
+- name*: name of contributor
+- affiliation: affiliation of of contributor
 
 #### recipe 
 
