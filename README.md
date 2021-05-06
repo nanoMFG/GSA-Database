@@ -36,7 +36,8 @@ This is an example of how to list things you need to use the software and how to
 
 python3 app.py 
 
-### Description of Data Model 
+### Description of Gr-ResQ Data Model 
 
+![overview of data model](http://url/to/img.png)
 
 
