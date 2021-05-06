@@ -44,7 +44,8 @@ The main entry is an experiment.  Each experiment consists of the following comp
 
 #### authors 
 
-name and affiliation of contributors.
+- name and affiliation of contributor
+- affiliation of contributor
 
 #### recipe 
 
@@ -63,30 +64,30 @@ name and affiliation of contributors.
 
 #### furnace 
 
-tube diameter 
-cross sectional area 
-tube length 
-length of heated region 
+- tube diameter 
+- cross sectional area 
+- tube length 
+- length of heated region 
 
 #### environmental conditions 
 
-dew point 
-ambient temperature 
+- dew point 
+- ambient temperature 
 
 #### substrate 
 
-catalyst 
-thickness 
-diameter 
-length 
-surface area 
+- catalyst 
+- thickness 
+- diameter 
+- length 
+- surface area 
 
 #### properties 
 
 #### results
 
-SEM images 
-raman spectra 
+- SEM images 
+- raman spectra 
 
 
 
