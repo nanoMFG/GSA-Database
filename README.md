@@ -40,4 +40,21 @@ python3 app.py
 
 ![overview of data model](https://github.com/nanoMFG/GSA-Database/blob/master/data_model.png)
 
+The main entry is an experiment.  Each experiment consists of the following components: 
+
+#### authors 
+
+#### recipe 
+
+#### furnace 
+
+#### environmental conditions 
+
+#### substrate 
+
+#### properties 
+
+#### results
+
+
 
