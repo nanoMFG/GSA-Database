@@ -95,15 +95,7 @@ def dropdb(request):
 #         Base.metadata.drop_all(bind=dal.engine)
 
 
-# @pytest.fixture(scope="class")
-# def author(persistdb, dropdb):
-#     AuthorFactory._meta.sqlalchemy_session_persistence = persistdb
-#     authors = AuthorFactory.create_batch(10)
-#     yield authors
-#     if dropdb:
-#         sess = dal.Session()
-#         sess.close()
-#         Base.metadata.drop_all(bind=dal.engine)
+
 
 # @pytest.fixture(scope="class")
 # def experiment(persistdb, dropdb):
@@ -134,13 +126,19 @@ def dropdb(request):
 
 @pytest.fixture(scope="class")
 def properties(persistdb, dropdb):
-    # RecipeFactory._meta.sqlalchemy_session_persistence = persistdb
-    # recipes = RecipeFactory.create_batch(5)
-    # ExperimentFactory._meta.sqlalchemy_session_persistence = persistdb
-    # experiments = ExperimentFactory.create_batch(10)
     PropertiesFactory._meta.sqlalchemy_session_persistence = persistdb
     properties = PropertiesFactory.create_batch(10)
     yield properties
+    if dropdb:
+        sess = dal.Session()
+        sess.close()
+        Base.metadata.drop_all(bind=dal.engine)
+
+@pytest.fixture(scope="class")
+def author(persistdb, dropdb):
+    AuthorFactory._meta.sqlalchemy_session_persistence = persistdb
+    authors = AuthorFactory.create_batch(10)
+    yield authors
     if dropdb:
         sess = dal.Session()
         sess.close()
