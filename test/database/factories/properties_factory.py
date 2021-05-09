@@ -12,9 +12,7 @@ class PropertiesFactory(factory.alchemy.SQLAlchemyModelFactory):
         sqlalchemy_session = dal.Session()
         sqlalchemy_session_persistence = "commit"
 
-    experiment = factory.SubFactory(
-        "test.database.factories.ExperimentFactory", properties=[]
-    )
+    experiment_id = 2
 
     average_thickness_of_growth = factory.Faker(
         "pyfloat", positive=False, min_value=0.0, max_value=10.0

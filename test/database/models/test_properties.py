@@ -19,6 +19,5 @@ class TestPropertiesQueries:
         qall = sesh.query(Properties).all()
         for row in qall:
             print(f"id: {row.id}")
-            for properties in row.properties:
-                print(f"step: {properties.number_of_layers}")
+            print(f"layers: {row.number_of_layers}")
         sesh.close()

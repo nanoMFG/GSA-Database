@@ -2,7 +2,7 @@ from sqlalchemy import Column, String, Integer, ForeignKey, Float, Boolean
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.ext.hybrid import hybrid_property
 
-from gresq.database import Base
+from gresq.database import Base, class_registry
 
 
 class Properties(Base):
