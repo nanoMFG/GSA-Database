@@ -13,8 +13,7 @@ class RecipeFactory(factory.alchemy.SQLAlchemyModelFactory):
         sqlalchemy_session = dal.Session()
         sqlalchemy_session_persistence = "commit"
 
-    id = factory.Faker('pyint');
-    carbon_source = "Source"
+    carbon_source = factory.Iterator(Recipe.carbon_source.info["choices"])
 
     preparation_steps = factory.RelatedFactoryList(
         "test.database.factories.PreparationStepFactory", "recipe", size=3
