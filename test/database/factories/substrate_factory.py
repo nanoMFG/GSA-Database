@@ -14,7 +14,7 @@ class SubstrateFactory(factory.alchemy.SQLAlchemyModelFactory):
         "test.database.factories.ExperimentFactory", "experiment", size=3
     )
 
-    catalyst = "Copper"
+    catalyst = factory.Iterator(Substrate.catalyst.info["choices"])
     thickness = factory.Faker(
         "pyfloat", positive=False, min_value=0.0, max_value=10.0
     )

@@ -34,7 +34,7 @@ class ExperimentFactory(factory.alchemy.SQLAlchemyModelFactory):
     #     "test.database.factories.AuthorFactory"
     # )
     properties = factory.RelatedFactoryList(
-        "test.database.factories.RamanFileFactory", "experiment", size=3
+        "test.database.factories.PropertiesFactory", "experiment", size=3
     )
     # # MANY-TO-ONE: experiments->recipe
     recipe = factory.SubFactory(

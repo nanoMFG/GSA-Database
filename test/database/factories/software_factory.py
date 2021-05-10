@@ -14,7 +14,7 @@ class SoftwareFactory(factory.alchemy.SQLAlchemyModelFactory):
     #raman_set = factory.SubFactory("test.database.factories.RamanSetFactory", setauthors=None)
     name = factory.Faker("first_name")
     version = factory.Faker("last_name")
-    release_date = factory.Faker("date")
+    release_date =  factory.Faker('date_object')
     branch = 'master'
     commitsh = factory.Faker("sha1")
     url = factory.Faker("url")

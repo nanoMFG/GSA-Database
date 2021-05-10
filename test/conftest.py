@@ -7,7 +7,7 @@ import pytest
 
 from gresq.database import dal, Base
 from gresq.database.models import Recipe
-from test.database.factories import RecipeFactory, PreparationStepFactory, AuthorFactory, PropertiesFactory, FurnaceFactory, EnvironmentConditionsFactory, ExperimentFactory
+from test.database.factories import RecipeFactory, PreparationStepFactory, AuthorFactory, PropertiesFactory, FurnaceFactory, EnvironmentConditionsFactory, ExperimentFactory, SoftwareFactory, SubstrateFactory
 
 #Make an option
 
@@ -135,12 +135,45 @@ def recipe(persistdb, dropdb):
 #         sess.close()
 #         Base.metadata.drop_all(bind=dal.engine)
 
+
 # @pytest.fixture(scope="class")
-# def author(persistdb, dropdb):
-#     AuthorFactory._meta.sqlalchemy_session_persistence = persistdb
-#     authors = AuthorFactory.create_batch(10)
-#     yield authors
+# def environment_conditions(persistdb, dropdb):
+#     ExperimentFactory._meta.sqlalchemy_session_persistence = persistdb
+#     experiments = ExperimentFactory.create_batch(10)
+#     EnvironmentConditionsFactory._meta.sqlalchemy_session_persistence = persistdb
+#     environment_conditions = EnvironmentConditionsFactory.create_batch(10)
+#     yield environment_conditions
 #     if dropdb:
 #         sess = dal.Session()
 #         sess.close()
 #         Base.metadata.drop_all(bind=dal.engine)
+
+@pytest.fixture(scope="class")
+def author(persistdb, dropdb):
+    AuthorFactory._meta.sqlalchemy_session_persistence = persistdb
+    authors = AuthorFactory.create_batch(10)
+    yield authors
+    if dropdb:
+        sess = dal.Session()
+        sess.close()
+        Base.metadata.drop_all(bind=dal.engine)
+
+# @pytest.fixture(scope="class")
+# def software(persistdb, dropdb):
+#     SoftwareFactory._meta.sqlalchemy_session_persistence = persistdb
+#     softwares = SoftwareFactory.create_batch(10)
+#     yield softwares
+#     if dropdb:
+#         sess = dal.Session()
+#         sess.close()
+#         Base.metadata.drop_all(bind=dal.engine)   
+
+# @pytest.fixture(scope="class")
+# def substrate(persistdb, dropdb):
+#     SubstrateFactory._meta.sqlalchemy_session_persistence = persistdb
+#     substrates = SubstrateFactory.create_batch(10)
+#     yield substrates
+#     if dropdb:
+#         sess = dal.Session()
+#         sess.close()
+#         Base.metadata.drop_all(bind=dal.engine)         
