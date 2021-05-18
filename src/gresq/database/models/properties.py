@@ -74,7 +74,7 @@ class Properties(Base):
         },
     )
 
-    experiment = relationship("Experiment", uselist=False, back_populates="properties")
+    experiment = relationship("Experiment", back_populates="properties")
 
     def json_encodable(self):
         params = [
