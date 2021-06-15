@@ -12,8 +12,8 @@ class FurnaceFactory(factory.alchemy.SQLAlchemyModelFactory):
         sqlalchemy_session = dal.Session()
         sqlalchemy_session_persistence = "commit"
 
-    experiments = factory.SubFactory(
-        "test.database.factories.ExperimentFactory", furnace=None
+    experiments =  factory.RelatedFactoryList(
+        "test.database.factories.ExperimentFactory", "furnace", size=3
     )
     tube_diameter = factory.Faker('pyfloat', positive=False, min_value=-100, max_value=100)
     cross_sectional_area = factory.Faker('pyfloat', positive=False, min_value=-100, max_value=100)

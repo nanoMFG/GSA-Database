@@ -19,18 +19,18 @@ import pytest
 from math import isclose
 
 from gresq.database import dal, Base
-from gresq.database.models import Author
-from test.database.factories import AuthorFactory
+from gresq.database.models import EnvironmentConditions
+from test.database.factories import EnvironmentConditionsFactory
 
 RTOL = 1e-3
 
 @pytest.fixture(scope="class")
-def author_query():
+def environment_conditions_query():
     sess = dal.Session()
-    return sess.query(Author).all()
+    return sess.query(EnvironmentConditions).all()
 
 
-class TestAuthorQueries:
-    def test_simple(self, author):
-        for row in author:
-            print(f"nanahub user id: {row.nanohub_userid}")
+class TestEnvironmentConditionsQueries:
+    def test_simple(self, environment_conditions):
+        for row in environment_conditions:
+            print(f"id: {row.ambient_temperature}")

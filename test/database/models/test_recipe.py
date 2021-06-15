@@ -32,9 +32,7 @@ def recipe_query():
 
 class TestRecipeQueries:
     def test_simple(self, recipe):
-        sesh = dal.Session()
-        qall = sesh.query(Recipe).all()
-        for row in qall:
+        for row in recipe:
             print(f"id: {row.id}")
             for step in row.preparation_steps:
                 print(f"step: {step.name}")

@@ -12,13 +12,8 @@ def properties_query():
     sess = dal.Session()
     return sess.query(Properties).all()
 
-
 class TestPropertiesQueries:
     def test_simple(self, properties):
-        sesh = dal.Session()
-        qall = sesh.query(Properties).all()
-        for row in qall:
+        for row in properties:
             print(f"id: {row.id}")
-            for properties in row.properties:
-                print(f"step: {properties.number_of_layers}")
-        sesh.close()
+            print(f"layers: {row.number_of_layers}")
