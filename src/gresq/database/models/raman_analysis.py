@@ -14,7 +14,7 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from gresq.database import Base
 
 
-class RamanSpectrum(Base):
+class RamanAnalysis(Base):
     """[summary]
     
     Args:
@@ -89,8 +89,8 @@ class RamanSpectrum(Base):
     raman_file = relationship(
         "RamanFile",
         uselist=False,
-        back_populates="raman_spectrum",
-        primaryjoin="RamanSpectrum.raman_file_id==RamanFile.id",
+        back_populates="raman_analysis",
+        primaryjoin="RamanAnalysis.raman_file_id==RamanFile.id",
         lazy="subquery",
     )
 
@@ -98,7 +98,7 @@ class RamanSpectrum(Base):
     #     "RamanSet",
     #     back_populates="raman_spectra",
     #     foreign_keys=set_id,
-    #     primaryjoin="RamanSpectrum.set_id==RamanSet.id",
+    #     primaryjoin="RamanAnalysis.set_id==RamanSet.id",
     # )
 
     # def __repr__(self):
@@ -126,7 +126,7 @@ class RamanSpectrum(Base):
         json_dict = {}
         json_dict["raman_file"] = self.raman_file.json_encodable()
         for p in params:
-            info = getattr(RamanSpectrum, p).info
+            info = getattr(RamanAnalysis, p).info
             json_dict[p] = {
                 "value": getattr(self, p),
                 "unit": info["std_unit"] if "std_unit" in info else None,
