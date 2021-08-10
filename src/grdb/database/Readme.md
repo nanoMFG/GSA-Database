@@ -9,21 +9,21 @@ dal - Data access layer
 
 Models are defined in `./models` and are imported to the `models` package level.  Import as follows:
 ```
-from gresq.database.models import Sample, Recipe
+from grdb.database.models import Sample, Recipe
 ```
 
 ## Data Access Layer (DAL)
 ### Usage
 ```
-from gresq.database import dal
+from grdb.database import dal
 ```
 ### Code Conventions
 
 An augmented declarative Base class is declared, any mixins defined and an instance of the `dal` is instantiated in:  
- `gresq/database/__init__.py`
+ `grdb.database/__init__.py`
 
  This supports the convention withing the applications of:  
- `from gresq.database import dal`  
+ `from grdb.database import dal`  
 
  The augmented `Base` declaration:  
  * Automatically sets the `__tablename__` attribute as the ClassName converted to lower "camel_case".

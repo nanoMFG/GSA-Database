@@ -2,7 +2,7 @@ from sqlalchemy import Column, String, Integer, ForeignKey, Float
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.ext.hybrid import hybrid_property
 
-from gresq.database import Base
+from grdb.database import Base
 
 
 class PreparationStep(Base):

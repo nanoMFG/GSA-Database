@@ -8,7 +8,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import relationship
 
-from gresq.database import Base
+from grdb.database import Base
 
 
 class SemFile(Base):
