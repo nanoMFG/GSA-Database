@@ -11,7 +11,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.hybrid import hybrid_property
 
-from gresq.database import Base
+from grdb.database import Base
 
 
 class RamanAnalysis(Base):
