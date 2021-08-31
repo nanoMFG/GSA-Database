@@ -5,8 +5,8 @@ Includes common test fixtures used for testing of database models.
 """
 import pytest
 
-from gresq.database import dal, Base
-from gresq.database.models import Recipe
+from grdb.database.v1_1_0 import dal, Base
+from grdb.database.v1_1_0.models import Recipe
 from test.database.factories import RecipeFactory, PreparationStepFactory, AuthorFactory, PropertiesFactory, FurnaceFactory, EnvironmentConditionsFactory, ExperimentFactory, SoftwareFactory, SubstrateFactory
 
 #Make an option

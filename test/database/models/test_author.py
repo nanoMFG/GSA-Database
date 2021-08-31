@@ -18,8 +18,8 @@ Conventions:
 import pytest
 from math import isclose
 
-from gresq.database import dal, Base
-from gresq.database.models import Author
+from grdb.database.v1_1_0 import dal, Base
+from grdb.database.v1_1_0.models import Author
 from test.database.factories import AuthorFactory
 
 RTOL = 1e-3

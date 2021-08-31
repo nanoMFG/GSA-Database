@@ -1,7 +1,7 @@
 import os
 
 from gresq.config import Config
-from gresq.database import dal
+from grdb.database.v1_1_0 import dal
 
 # Testing Configuration and dal initialization
 config_prefix = "TEST_DATABASE"

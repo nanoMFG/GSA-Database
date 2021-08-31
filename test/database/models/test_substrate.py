@@ -1,8 +1,8 @@
 import pytest
 from math import isclose
 
-from gresq.database import dal, Base
-from gresq.database.models import Substrate
+from grdb.database.v1_1_0 import dal, Base
+from grdb.database.v1_1_0.models import Substrate
 from test.database.factories import SubstrateFactory
 
 RTOL = 1e-3

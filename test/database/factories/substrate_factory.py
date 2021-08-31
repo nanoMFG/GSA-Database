@@ -1,7 +1,7 @@
 import factory
 
-from gresq.database.models import Substrate
-from gresq.database.dal import dal
+from grdb.database.v1_1_0.models import Substrate
+from grdb.database.v1_1_0.dal import dal
 
 class SubstrateFactory(factory.alchemy.SQLAlchemyModelFactory):
     class Meta:
