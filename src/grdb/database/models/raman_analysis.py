@@ -57,7 +57,6 @@ class RamanAnalysis(Base):
     )
     d_to_g = Column(Float, info={"verbose_name": "Weighted D/G"})
     gp_to_g = Column(Float, info={"verbose_name": "Weighted G'/G"})
-    
     d_peak_shift = Column(
         Float,
         info={"verbose_name": "D Peak Shift", "std_unit": "cm^-1", "required": False},
