@@ -2,7 +2,7 @@ from sqlalchemy import Column, String, Integer, ForeignKey, Float
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.ext.hybrid import hybrid_property
 
-from grdb.database import Base
+from src.grdb.database import Base
 
 class EnvironmentConditions(Base):
     """[summary]

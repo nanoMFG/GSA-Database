@@ -7,7 +7,7 @@ from sqlalchemy.schema import Table
 from sqlalchemy.dialects.postgresql import *
 
 
-from grdb.database import Base, class_registry
+from src.grdb.database import Base, class_registry
 
 ExperimentToAuthorAssociation = Table('EXP_TO_ATHR_ASSCTN', Base.metadata,
     Column('author_id', Integer, ForeignKey('author.id')),
