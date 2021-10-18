@@ -10,7 +10,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.ext.hybrid import hybrid_property
 
-from grdb.database import Base
+from src.grdb.database import Base
 
 
 class Software(Base):
