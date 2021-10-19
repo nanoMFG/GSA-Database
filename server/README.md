@@ -89,4 +89,4 @@ Is there any better approach?
 2. Experiment data submission will be handled by csv file submission. (Probably there should be some kind of protocol to be able to parse the file) 
 
 
-4. Frontend App
+3. Create Frontend App & DB related to the Frontend App 
