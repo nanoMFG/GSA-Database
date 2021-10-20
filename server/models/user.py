@@ -15,7 +15,7 @@ class User(Base):
 
     email = Column(String(320), unique=True, nullable=False)
 
-    password_hash = Column(String(70), nullable=False)
+    password_hash = Column(String(256), nullable=False)
 
     # 0: read only, 1: read/write
     permission_level = Column(Integer, nullable=False, default=1)

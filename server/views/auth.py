@@ -16,7 +16,7 @@ def register():
     email = request.form['email']
     username = request.form['username']
     password = request.form['password']
-    password_hash = generate_password_hash(password, salt_length=len(last_name))
+    password_hash = generate_password_hash(password)
 
     user = User.query.filter_by(email=email).first()
 
@@ -34,6 +34,19 @@ def register():
         return make_response('User registered.', 201)
     else:
         return make_response('User already exists', 202)
+
+
+# TODO: ADD JWT
+@auth.route("/login", methods=['post'])
+def login():
+    username = request.form['username']
+    password = request.form['password']
+
+    user = User.query.filter_by(username=username).first()
+    if user and check_password_hash(user.password_hash, password):
+        return make_response("Login successful.", 200)
+    else:
+        return make_response('Incorrect username or password', 403)
 
 
 @auth.route("/users")
