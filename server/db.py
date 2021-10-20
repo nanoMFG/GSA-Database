@@ -1,6 +1,5 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
-from src.grdb.database import Base
 
 
 class DataBase:
@@ -8,9 +7,14 @@ class DataBase:
     Class that is used to access database in webapp.
     """
 
-    def __init__(self):
+    def __init__(self, base):
+        """
+        Args:
+            base (): declarative base
+        """
         self.engine = None
         self.session = None
+        self.base = base
 
     def init(self, db_url: str):
         """
@@ -22,4 +26,4 @@ class DataBase:
         self.session = scoped_session(sessionmaker(autocommit=False,
                                                    autoflush=False,
                                                    bind=self.engine))
-        Base.query = self.session.query_property()
+        self.base.query = self.session.query_property()
