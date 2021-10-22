@@ -4,23 +4,23 @@ from sqlalchemy import MetaData
 
 from src.grdb.database import Base as research_db_Base
 from .models import Base as webapp_db_Base
-from .db import DataBase
+from .db import Database
 
 meta = MetaData()
-research_db = DataBase(research_db_Base)
-webapp_db = DataBase(webapp_db_Base)
+research_db = Database(research_db_Base)
+webapp_db = Database(webapp_db_Base)
 
 
 def register_blueprints(app):
-    from .views.index import index
+    from .views import index
     app.register_blueprint(index)
-    from .views.auth import auth
+    from .views import auth
     app.register_blueprint(auth)
 
 
-def create_schema(db: DataBase):
+def create_schema(database: Database):
     from .models import user
-    db.base.metadata.create_all(db.engine)
+    database._Base.metadata.create_all(database.engine)
 
 
 def create_app():
