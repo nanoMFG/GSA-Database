@@ -1,6 +1,5 @@
-from flask import Flask, Blueprint, request, make_response, jsonify
+from flask import Blueprint, request, make_response, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
-import jwt
 
 from ..models.user import User
 
@@ -28,8 +27,8 @@ def register():
             email=email,
             password_hash=password_hash
         )
-        webapp_db.session.add(user)
-        webapp_db.session.commit()
+        webapp_db.Session.add(user)
+        webapp_db.Session.commit()
 
         return make_response('User registered.', 201)
     else:

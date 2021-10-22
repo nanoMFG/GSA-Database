@@ -44,7 +44,6 @@ class Config:
     TEST_DATABASE_URL_WRITE = environ.get('TEST_DATABASE_URL_WRITE')
     TEST_DATABASE_URL_ADMIN = environ.get('TEST_DATABASE_URL_ADMIN')
 
-    # export PROD environment vars
     PROD_DATABASE_URL = environ.get('PROD_DATABASE_URL')
     PROD_DATABASE_ARGS = environ.get('PROD_DATABASE_ARGS')
     PROD_DATABASE_URL_READ = environ.get('PROD_DATABASE_URL_READ')
