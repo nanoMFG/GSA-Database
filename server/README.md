@@ -79,7 +79,7 @@ One step consists of
 
 "#" means it is a numeric field
 
-### Current API
+## Current API
 
 Pass filter as query string into data/expriments endpoint.
 
