@@ -97,17 +97,17 @@ ex) ```data/experiments?rcs=CH4&rbp=lt40```
 
 #### Query String Keys
 
-rcs : carbon source (text)
-rbp : base pressure (numeric)
-sc : catalyst (text)
-st : thickness (numeric)
-sd : diameter (numeric
-sl : length (numeric)
-ssa : surface area (numeric)
-ftd : tube diameter (numeric)
-fcsa : sross sectional area (numeric)
-ftl : tube length (numeric)
-flhr : length of heated region (numeric)
+- rcs : carbon source (text)
+- rbp : base pressure (numeric)
+- sc : catalyst (text)
+- st : thickness (numeric)
+- sd : diameter (numeric
+- sl : length (numeric)
+- ssa : surface area (numeric)
+- ftd : tube diameter (numeric)
+- fcsa : sross sectional area (numeric)
+- ftl : tube length (numeric)
+- flhr : length of heated region (numeric)
 
 #### Inequality Codes
 - eq : eqaul to
