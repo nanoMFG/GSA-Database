@@ -1,9 +1,9 @@
 from flask import Blueprint, request, make_response, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from ..models.user import User
+from grdb.database.models.user import User
 
-from server import webapp_db
+from server import db as db
 
 auth = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -13,7 +13,6 @@ def register():
     first_name = request.form['first_name']
     last_name = request.form['last_name']
     email = request.form['email']
-    username = request.form['username']
     password = request.form['password']
     password_hash = generate_password_hash(password)
 
@@ -22,13 +21,11 @@ def register():
     if not user:
         user = User(
             username=username,
-            first_name=first_name,
-            last_name=last_name,
             email=email,
             password_hash=password_hash
         )
-        webapp_db.Session.add(user)
-        webapp_db.Session.commit()
+        db.Session.add(user)
+        db.Session.commit()
 
         return make_response('User registered.', 201)
     else:

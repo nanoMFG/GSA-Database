@@ -50,9 +50,13 @@ def query_experiment_data(q: Query, params: dict) -> list:
 
     """
 
-    q = q.join(Experiment.recipe) \
-        .join(Experiment.substrate) \
-        .join(Experiment.furnace)
+    q = q.join(Experiment.recipe, isouter=True) \
+        .join(Experiment.environment_conditions, isouter=True) \
+        .join(Experiment.substrate, isouter=True) \
+        .join(Experiment.furnace, isouter=True) \
+        .join(Experiment.properties, isouter=True)
+        # .join(Experiment.raman_files, isouter=True) \
+        # .join(Experiment.sem_files, isouter=True)
 
     if params.get('rcs'):  # recipe.carbon_source
         q = q.filter(Recipe.carbon_source == params.get('rcs'))
