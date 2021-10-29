@@ -1,28 +1,36 @@
 from flask import Blueprint, request, make_response, jsonify
+from flask_cors import CORS, cross_origin
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from grdb.database.models.user import User
-
-from server import db as db
+from grdb.database.models import Author, User
+from server import db
 
 auth = Blueprint('auth', __name__, url_prefix='/auth')
+CORS(auth)
 
 
-@auth.route("/register", methods=["POST"])
-def register():
-    first_name = request.form['first_name']
-    last_name = request.form['last_name']
-    email = request.form['email']
-    password = request.form['password']
+@auth.route("/signup", methods=["POST"])
+@cross_origin()
+def signup():
+    data = request.get_json()
+    first_name = data['first_name']
+    last_name = data['last_name']
+    institution = data['institution']
+    email = data['email']
+    password = data['password']
     password_hash = generate_password_hash(password)
 
     user = User.query.filter_by(email=email).first()
 
     if not user:
+        author = Author(first_name=first_name, last_name=last_name, institution=institution)
+        db.Session.add(author)
+        db.Session.flush()
+
         user = User(
-            username=username,
             email=email,
-            password_hash=password_hash
+            password_hash=password_hash,
+            author_id=author.id
         )
         db.Session.add(user)
         db.Session.commit()
