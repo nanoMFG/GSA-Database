@@ -43,7 +43,8 @@ class Author(Base):
 
     # Collection of experiments associated with this author 
     authored_experiments = relationship("Experiment", secondary="EXP_TO_ATHR_ASSCTN", back_populates="authors")
-    
+
+    user = relationship("User", back_populates="author", uselist=False)
     @hybrid_property
     def full_name_and_institution(self):
         return "%s, %s   (%s)" % (self.last_name, self.first_name, self.institution)

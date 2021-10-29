@@ -11,4 +11,4 @@ from src.grdb.database.models.software import Software
 from src.grdb.database.models.raman_file import RamanFile
 from src.grdb.database.models.raman_analysis import RamanAnalysis
 from src.grdb.database.models.properties import Properties
-from grdb.database.models.user import User
+from src.grdb.database.models.user import User
