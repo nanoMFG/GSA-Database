@@ -105,7 +105,7 @@ ex) ```data/experiments?rcs=CH4&rbp=lt40```
 - sl : length (numeric)
 - ssa : surface area (numeric)
 - ftd : tube diameter (numeric)
-- fcsa : sross sectional area (numeric)
+- fcsa : cross sectional area (numeric)
 - ftl : tube length (numeric)
 - flhr : length of heated region (numeric)
 
