@@ -24,7 +24,7 @@ class Database:
                 This initializes the engine and
             enable_model_query (bool): enable Model.query.xxx to query the database.
         """
-        self.engine = create_engine(db_url, echo=True)
+        self.engine = create_engine(db_url)
         self.Session = scoped_session(sessionmaker(autocommit=False,
                                                    autoflush=False,
                                                    bind=self.engine))

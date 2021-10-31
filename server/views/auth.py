@@ -1,5 +1,5 @@
 from flask import Blueprint, request, make_response, jsonify
-from flask_cors import CORS, cross_origin
+from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from grdb.database.models import Author, User
@@ -10,7 +10,6 @@ CORS(auth)
 
 
 @auth.route("/signup", methods=["POST"])
-@cross_origin()
 def signup():
     data = request.get_json()
     first_name = data['first_name']
@@ -37,16 +36,17 @@ def signup():
 
         return make_response('User registered.', 201)
     else:
-        return make_response('User already exists', 202)
+        return make_response('User already exists', 409)
 
 
 # TODO: ADD JWT
-@auth.route("/login", methods=['post'])
+@auth.route("/signin", methods=['post'])
 def login():
-    username = request.form['username']
-    password = request.form['password']
+    data = request.get_json()
+    email = data['email']
+    password = data['password']
 
-    user = User.query.filter_by(username=username).first()
+    user = User.query.filter_by(email=email).first()
     if user and check_password_hash(user.password_hash, password):
         return make_response("Login successful.", 200)
     else:
@@ -55,5 +55,4 @@ def login():
 
 @auth.route("/users")
 def users():
-    print(User.query.all()[0])
     return jsonify()

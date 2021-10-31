@@ -7,11 +7,11 @@ from .utils import query_experiment_data
 index = Blueprint('index', __name__, url_prefix='/')
 
 
-@index.route('/data/experiments', methods=['GET'])
+@index.route('/experiments/data', methods=['GET'])
 def experiment_data():
     params = request.args
-
-    q = db.Session.query(Experiment)
+    session = db.Session()
+    q = session.query(Experiment)
 
     # CURRENTLY SUPPORTED COLUMNS: recipe, substrate, furnace
     experiments = query_experiment_data(q, params)
@@ -45,4 +45,5 @@ def experiment_data():
                     'material': e.material_name
                     }
         output.append(exp_dict)
+    session.close()
     return jsonify(output)
