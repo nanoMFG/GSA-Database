@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 from src.grdb.database.models import *
 
-from server import db
+from server import read_db, write_db
 from .utils import query_experiment_data
 
 index = Blueprint('index', __name__, url_prefix='/')
@@ -10,7 +10,7 @@ index = Blueprint('index', __name__, url_prefix='/')
 @index.route('/experiments/data', methods=['GET'])
 def experiment_data():
     params = request.args
-    session = db.Session()
+    session = read_db.Session()
     q = session.query(Experiment)
 
     # CURRENTLY SUPPORTED COLUMNS: recipe, substrate, furnace
