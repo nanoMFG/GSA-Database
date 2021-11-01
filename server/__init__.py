@@ -32,8 +32,9 @@ def create_app():
     read_db.init(app.config["DEV_DATABASE_URL_READ"])
     write_db.init(app.config["DEV_DATABASE_URL_WRITE"])
 
-    # create user table
+    # create tables for webapp
     # from grdb.database.models import User
+    # from grdb.database.models import AuthToken
     # Base.metadata.create_all(bind=db.engine)
 
     register_blueprints(app)

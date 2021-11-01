@@ -49,3 +49,5 @@ class Config:
     PROD_DATABASE_URL_READ = environ.get('PROD_DATABASE_URL_READ')
     PROD_DATABASE_URL_WRITE = environ.get('PROD_DATABASE_URL_WRITE')
     PROD_DATABASE_URL_ADMIN = environ.get('PROD_DATABASE_URL_ADMIN')
+
+    JWT_SECRET = environ.get('JWT_SECRET')
