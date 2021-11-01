@@ -15,7 +15,7 @@ class Database:
         """
         self.engine = None
         self.Session = None
-        self._Base = base if base else None
+        self.Base = base if base else None
 
     def init(self, db_url: str, enable_model_query: bool = True):
         """
@@ -28,7 +28,7 @@ class Database:
         self.Session = scoped_session(sessionmaker(autocommit=False,
                                                    autoflush=False,
                                                    bind=self.engine))
-        if enable_model_query and self._Base:
-            self._Base.query = self.Session.query_property()
+        if enable_model_query and self.Base:
+            self.Base.query = self.Session.query_property()
         elif enable_model_query:
             warnings.warn("Model query enabled but no declarative base passed.")
