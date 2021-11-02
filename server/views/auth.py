@@ -1,11 +1,9 @@
 from flask import Blueprint, request, make_response, jsonify
 from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
-import jwt
-from ..config import Config
 from server import read_db, write_db
 from grdb.database.models import Author, User
-from .utils.jwt import is_expired, assign_token
+from .utils.jwt import is_valid, assign_token, parse_token
 
 auth = Blueprint('auth', __name__, url_prefix='/auth')
 CORS(auth)
@@ -50,10 +48,8 @@ def signup():
 def signin():
     token = request.headers.environ.get('HTTP_AUTHORIZATION')
     if token:
-        payload = jwt.decode(token, Config.JWT_SECRET)
-        email = payload['email']
-        expiration = payload['expiration']
-        if not is_expired(expiration):
+        if is_valid(token):
+            email, _ = parse_token(token)
             token = assign_token(email)
             return jsonify({'token': token})
         else:
