@@ -85,15 +85,15 @@ Pass filter as query string into data/expriments endpoint.
 
 If filtering a text field, pass the text as the query string value.
 
-ex) ```data/experiments?rcs=CH4```
+ex) ```experiments/data?rcs=CH4```
 
 If filtering a numerical filed, pass the inequality sign as well as the numeric value as the query string value.
 
-ex) ```data/experiments?rbp=lt40```
+ex) ```experiments/data?rbp=lt40```
 
 You can chain the filters.
 
-ex) ```data/experiments?rcs=CH4&rbp=lt40```
+ex) ```experiments/data?rcs=CH4&rbp=lt40```
 
 #### Query String Keys
 
@@ -104,10 +104,18 @@ ex) ```data/experiments?rcs=CH4&rbp=lt40```
 - sd : diameter (numeric
 - sl : length (numeric)
 - ssa : surface area (numeric)
+- edp : dew point (numeric)
+- eat : ambient temperature (numeric)
 - ftd : tube diameter (numeric)
 - fcsa : cross sectional area (numeric)
 - ftl : tube length (numeric)
 - flhr : length of heated region (numeric)
+- patg : average thickness of growth (numeric)
+- psdg : standard deviation of growth (numeric)
+- pnl : number of layers (numeric)
+- pgc : growth coverage (numeric)
+- pds : domain size (numeric)
+- ps : shape (text)
 
 #### Inequality Codes
 - eq : eqaul to
@@ -122,15 +130,4 @@ ex) ```data/experiments?rcs=CH4&rbp=lt40```
 - For numerical fields: <inequality code><value>
 
 ### TODO:
-
-1. Create api endpoint to get experiment data with query strings(?) <br>
-ex. nanomfg.org/api/experiments?tube-diameter=<10&thickness=!=10 <br>
-Downside: too many query parameter. This endpoint might not be able to be used by api calls without frontend application.<br>
-Is there any better approach?
-
-
-
-2. Experiment data submission will be handled by csv file submission. (Probably there should be some kind of protocol to be able to parse the file) 
-
-
-3. Create Frontend App & DB related to the Frontend App 
+Experiment data submission will be handled by csv file submission. (Probably there should be some kind of protocol to be able to parse the file) 
