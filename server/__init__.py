@@ -8,6 +8,7 @@ from grdb.config import Config
 
 read_db = Database(Base)
 write_db = Database(Base)
+admin_db = Database(Base)
 # read_db = DataAccessLayer()
 # conf = Config(prefix="DEV_DATABASE", suffix="_READ", debug=True, try_secrets=False)
 # read_db.init_db(conf, privileges={"read": True, "write": False, "validate": False})
@@ -31,11 +32,11 @@ def create_app():
     app.config['CORS_HEADERS'] = 'Content-Type'
     read_db.init(app.config["DEV_DATABASE_URL_READ"])
     write_db.init(app.config["DEV_DATABASE_URL_WRITE"])
+    admin_db.init(app.config["DEV_DATABASE_URL_ADMIN"])
 
-    # create tables for webapp
-    # from grdb.database.models import User
-    # from grdb.database.models import AuthToken
-    # Base.metadata.create_all(bind=db.engine)
+    # create user table for webapp
+    from grdb.database.models import User
+    Base.metadata.create_all(bind=admin_db.engine)
 
     register_blueprints(app)
     return app
