@@ -19,33 +19,53 @@ def experiment_data():
     experiments = query_experiment_data(q, params)
     output = []
     for e in experiments:
-        exp_dict = dict()
-        if e.recipe:
-            exp_dict['carbon_source'] = e.recipe.carbon_source
-            exp_dict['base_pressure'] = e.recipe.base_pressure
-
-        exp_dict = {'carbon_source': e.recipe.carbon_source if e.recipe else None,
-                    'base_pressure': e.recipe.base_pressure if e.recipe else None,
-                    'catalyst': e.substrate.catalyst if e.substrate else None,
-                    'dew_point': e.environment_conditions.dew_point if e.environment_conditions else None,
-                    'ambient_temperature': e.environment_conditions.ambient_temperature if e.environment_conditions else None,
-                    'thickness': e.substrate.thickness if e.substrate else None,
-                    'diameter': e.substrate.diameter if e.substrate else None,
-                    'length': e.substrate.length if e.substrate else None,
-                    'surface_area': e.substrate.surface_area if e.substrate else None,
-                    'tube_diameter': e.furnace.tube_diameter if e.furnace else None,
-                    'cross_sectional_area': e.furnace.cross_sectional_area if e.furnace else None,
-                    'tube_length': e.furnace.tube_length if e.furnace else None,
-                    'length_of_heated_region': e.furnace.length_of_heated_region if e.furnace else None,
-                    'average_thickness_of_growth': e.properties.average_thickness_of_growth if e.properties else None,
-                    'standard_deviation_of_growth': e.properties.standard_deviation_of_growth if e.properties else None,
-                    'number_of_layers': e.properties.number_of_layers if e.properties else None,
-                    'growth_coverage': e.properties.growth_coverage if e.properties else None,
-                    'domain_size': e.properties.domain_size if e.properties else None,
-                    'shape': e.properties.shape if e.properties else None,
+        exp_dict = {'carbon_source': None,
+                    'base_pressure': None,
+                    'catalyst': None,
+                    'dew_point': None,
+                    'ambient_temperature': None,
+                    'thickness': None,
+                    'diameter': None,
+                    'length': None,
+                    'surface_area': None,
+                    'tube_diameter': None,
+                    'cross_sectional_area': None,
+                    'tube_length': None,
+                    'length_of_heated_region': None,
+                    'average_thickness_of_growth': None,
+                    'standard_deviation_of_growth': None,
+                    'number_of_layers': None,
+                    'growth_coverage': None,
+                    'domain_size': None,
+                    'shape': None,
                     'date': e.experiment_date,
                     'material': e.material_name
                     }
+        if e.recipe:
+            exp_dict['carbon_source'] = e.recipe.carbon_source
+            exp_dict['base_pressure'] = e.recipe.base_pressure
+        if e.substrate:
+            exp_dict['catalyst'] = e.substrate.catalyst
+            exp_dict['thickness'] = e.substrate.thickness
+            exp_dict['diameter'] = e.substrate.diameter
+            exp_dict['length'] = e.substrate.length
+            exp_dict['surface_area'] = e.substrate.surface_area
+        if e.environment_conditions:
+            exp_dict['dew_point'] = e.environment_conditions.dew_point
+            exp_dict['ambient_temperature'] = e.environment_conditions.ambient_temperature
+        if e.furnace:
+            exp_dict['tube_diameter'] = e.furnace.tube_diameter
+            exp_dict['cross_sectional_area'] = e.furnace.cross_sectional_area
+            exp_dict['tube_length'] = e.furnace.tube_length
+            exp_dict['length_of_heated_region'] = e.furnace.length_of_heated_region
+        if e.properties:
+            exp_dict['average_thickness_of_growth'] = e.properties.average_thickness_of_growth
+            exp_dict['standard_deviation_of_growth'] = e.properties.standard_deviation_of_growth
+            exp_dict['number_of_layers'] = e.properties.number_of_layers
+            exp_dict['growth_coverage'] = e.properties.growth_coverage
+            exp_dict['domain_size'] = e.properties.domain_size
+            exp_dict['shape'] = e.properties.shape
+
         output.append(exp_dict)
     session.close()
     return jsonify(output)
