@@ -2,11 +2,19 @@ from flask import Blueprint, jsonify, request
 from flask_cors import CORS
 from src.grdb.database.models import *
 
-from server import read_db, write_db
+from .. import read_db, write_db
 from .utils.query_helpers import query_experiment_data
 
 index = Blueprint('index', __name__, url_prefix='/')
 CORS(index)
+
+
+@index.route('/db/tables/all', methods=['GET'])
+def all_tables():
+    session = read_db.Session()
+    data = []
+    env_conditions = EnvironmentConditions.query.all()
+    return jsonify(data)
 
 
 @index.route('/experiments/data', methods=['GET'])
