@@ -1,6 +1,9 @@
 from flask import Blueprint, jsonify, request
 from flask_cors import CORS
-from src.grdb.database.models import *
+from src.grdb.database.models import (
+    Furnace, Substrate, EnvironmentConditions, Recipe, PreparationStep, Experiment, Author, SemFile, SemAnalysis,
+    Software, RamanFile, RamanAnalysis, Properties, User
+)
 
 from .. import read_db, write_db
 from .utils.query_helpers import query_experiment_data
@@ -11,10 +14,26 @@ CORS(index)
 
 @index.route('/db/tables/all', methods=['GET'])
 def all_tables():
-    session = read_db.Session()
-    data = []
     env_conditions = EnvironmentConditions.query.all()
-    return jsonify(data)
+    env_conditions_json = [env_condition.json_encodable() for env_condition in env_conditions]
+    furnaces = Furnace.query.all()
+    furnaces_json = [f.json_encodable() for f in furnaces]
+    preparation_steps = PreparationStep.query.all()
+    preparation_steps_json = [p.json_encodable() for p in preparation_steps]
+    properties = Properties.query.all()
+    properties_json = [p.json_encodable() for p in properties]
+    recipes = Recipe.query.all()
+    recipes_json = [r.json_encodable() for r in recipes]
+    substrates = Substrate.query.all()
+    substrates_json = [s.json_encodable() for s in substrates]
+    return {
+        'environmental_conditions': env_conditions_json,
+        'furnaces': furnaces_json,
+        'preparation_steps': preparation_steps_json,
+        'properties': properties_json,
+        'recipes': recipes_json,
+        'substrates': substrates_json
+    }
 
 
 @index.route('/experiments/data', methods=['GET'])
