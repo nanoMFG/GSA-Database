@@ -1,3 +1,4 @@
+import json
 from flask import Blueprint, jsonify, request
 from flask_cors import CORS
 from src.grdb.database.models import (
@@ -6,7 +7,7 @@ from src.grdb.database.models import (
 )
 
 from .. import read_db, write_db
-from .utils.query_helpers import query_experiment_data
+from .utils.query import query_experiment_data
 
 index = Blueprint('index', __name__, url_prefix='/')
 CORS(index)
@@ -16,24 +17,63 @@ CORS(index)
 def all_tables():
     env_conditions = EnvironmentConditions.query.all()
     env_conditions_json = [env_condition.json_encodable() for env_condition in env_conditions]
+
     furnaces = Furnace.query.all()
     furnaces_json = [f.json_encodable() for f in furnaces]
-    preparation_steps = PreparationStep.query.all()
-    preparation_steps_json = [p.json_encodable() for p in preparation_steps]
+
     properties = Properties.query.all()
     properties_json = [p.json_encodable() for p in properties]
+
     recipes = Recipe.query.all()
-    recipes_json = [r.json_encodable() for r in recipes]
+    recipes_json = []
+    for r in recipes:
+        recipe_json = r.json_encodable()
+        prep_steps = r.preparation_steps
+        prep_steps_json = [p.json_encodable() for p in prep_steps]
+        recipe_json['preparation_steps'] = prep_steps_json
+        recipes_json.append(recipe_json)
+
     substrates = Substrate.query.all()
     substrates_json = [s.json_encodable() for s in substrates]
     return {
         'environmental_conditions': env_conditions_json,
         'furnaces': furnaces_json,
-        'preparation_steps': preparation_steps_json,
         'properties': properties_json,
         'recipes': recipes_json,
         'substrates': substrates_json
     }
+
+
+@index.route('/experiments/filtered/webapp', methods=['POST'])
+def filtered_experiments():
+    body = request.get_json()
+    environmental_condition_filters = body.get('environmentalConditionFilters')
+    furnace_filters = body.get('furnaceFilters')
+    substrate_filters = body.get('substrateFilters')
+    recipe_filters = body.get('recipeFilters')
+
+    session = read_db.Session()
+    q = session.query(Experiment)
+
+    if environmental_condition_filters:
+        env_cond_ids = [evn_cond.get('id') for evn_cond in environmental_condition_filters]
+        q = q.filter(Experiment.environment_conditions_id.in_(env_cond_ids))
+
+    if furnace_filters:
+        furnace_ids = [furnace.get('id') for furnace in furnace_filters]
+        q = q.filter(Experiment.furnace_id.in_(furnace_ids))
+
+    if substrate_filters:
+        substrate_ids = [substrate.get('id') for substrate in substrate_filters]
+        q = q.filter(Experiment.furnace_id.in_(substrate_ids))
+
+    if recipe_filters:
+        recipe_ids = [recipe.get('id') for recipe in recipe_filters]
+        q = q.filter(Experiment.recipe_id.in_(recipe_ids))
+
+    experiments = q.all()
+    experiments_json = [experiment.json_encodable() for experiment in experiments]
+    return jsonify(experiments_json)
 
 
 @index.route('/experiments/data', methods=['GET'])
