@@ -49,10 +49,3 @@ class Author(Base):
     @hybrid_property
     def full_name_and_institution(self):
         return "%s, %s   (%s)" % (self.last_name, self.first_name, self.institution)
-
-    def json_encodable(self):
-        return {
-            "first_name": self.first_name,
-            "last_name": self.last_name,
-            "institution": self.institution,
-        }
