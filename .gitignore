@@ -105,7 +105,7 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-server/.env
+src/server/.env
 .venv
 env/
 venv/
@@ -134,3 +134,4 @@ dmypy.json
 
 # temporary files
 :memory
+/src/grdb/server/.env

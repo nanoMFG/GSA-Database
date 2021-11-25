@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from server.config import Config
+from grdb.server.app.config import Config
 import jwt
 
 

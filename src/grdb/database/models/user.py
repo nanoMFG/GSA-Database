@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
-from src.grdb.database import Base
+from grdb.database import Base
 
 
 class User(Base):

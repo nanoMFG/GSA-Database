@@ -1,10 +1,10 @@
 from flask import Flask
 from flask_cors import CORS
 
-from grdb.database.dal import DataAccessLayer
-from src.grdb.database import Base
+# from grdb.database.dal import DataAccessLayer
+# from grdb.config import Config
+from grdb.database import Base
 from .db import Database
-from grdb.config import Config
 
 read_db = Database(Base)
 write_db = Database(Base)
@@ -28,7 +28,7 @@ def create_app():
     # create and configure the app
     app = Flask(__name__, instance_relative_config=False)
     CORS(app, resources={r"/*": {"origins": "*"}})
-    app.config.from_object('server.config.Config')
+    app.config.from_object('grdb.server.app.config.Config')
     app.config['CORS_HEADERS'] = 'Content-Type'
     read_db.init(app.config["DEV_DATABASE_URL_READ"])
     write_db.init(app.config["DEV_DATABASE_URL_WRITE"])
