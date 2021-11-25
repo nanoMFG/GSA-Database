@@ -1,4 +1,3 @@
-import json
 from flask import Blueprint, jsonify, request
 from flask_cors import CORS
 from src.grdb.database.models import (
@@ -35,45 +34,68 @@ def all_tables():
 
     substrates = Substrate.query.all()
     substrates_json = [s.json_encodable() for s in substrates]
+
+    authors = Author.query.all()
+    authors_json = [a.json_encodable() for a in authors]
+
     return {
         'environmental_conditions': env_conditions_json,
         'furnaces': furnaces_json,
         'properties': properties_json,
         'recipes': recipes_json,
-        'substrates': substrates_json
+        'substrates': substrates_json,
+        'authors': authors_json,
     }
 
 
-@index.route('/experiments/filtered/webapp', methods=['POST'])
+@index.route('/experiments/<int:experiment_id>', methods=['GET'])
+def get_experiment(experiment_id):
+    experiment = Experiment.query.filter_by(id=experiment_id).first()
+    return jsonify(experiment.json_encodable())
+
+
+@index.route('/experiments/filter', methods=['POST'])
 def filtered_experiments():
     body = request.get_json()
     environmental_condition_filters = body.get('environmentalConditionFilters')
     furnace_filters = body.get('furnaceFilters')
     substrate_filters = body.get('substrateFilters')
     recipe_filters = body.get('recipeFilters')
+    property_filters = body.get('propertyFilters')
+    author_filters = body.get('authorFilters')
 
-    session = read_db.Session()
-    q = session.query(Experiment)
-
+    experiments = []
     if environmental_condition_filters:
         env_cond_ids = [evn_cond.get('id') for evn_cond in environmental_condition_filters]
-        q = q.filter(Experiment.environment_conditions_id.in_(env_cond_ids))
+        experiments += Experiment.query.filter(Experiment.environment_conditions_id.in_(env_cond_ids)).all()
 
     if furnace_filters:
         furnace_ids = [furnace.get('id') for furnace in furnace_filters]
-        q = q.filter(Experiment.furnace_id.in_(furnace_ids))
+        experiments += Experiment.query.filter(Experiment.furnace_id.in_(furnace_ids)).all()
 
     if substrate_filters:
         substrate_ids = [substrate.get('id') for substrate in substrate_filters]
-        q = q.filter(Experiment.furnace_id.in_(substrate_ids))
+        experiments += Experiment.query.filter(Experiment.substrate_id.in_(substrate_ids))
+
+    if author_filters:
+        author_ids = [author.get('id') for author in author_filters]
+        experiments += Experiment.query.filter(Experiment.recipe_id.in_(author_ids))
 
     if recipe_filters:
         recipe_ids = [recipe.get('id') for recipe in recipe_filters]
-        q = q.filter(Experiment.recipe_id.in_(recipe_ids))
+        experiments += Experiment.query.filter(Experiment.recipe_id.in_(recipe_ids))
 
-    experiments = q.all()
-    experiments_json = [experiment.json_encodable() for experiment in experiments]
-    return jsonify(experiments_json)
+    experiment_ids = set()
+    for e in experiments:
+        experiment_ids.add(e.id)
+
+    if property_filters:
+        property_ids = [p.get('id') for p in property_filters]
+        properties = Properties.query.filter(Properties.id.in_(property_ids)).all()
+        for p in properties:
+            experiment_ids.add(p.experiment.id)
+
+    return jsonify(list(experiment_ids))
 
 
 @index.route('/experiments/data', methods=['GET'])
