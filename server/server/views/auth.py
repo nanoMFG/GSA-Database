@@ -1,7 +1,7 @@
 from flask import Blueprint, request, make_response, jsonify
 from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
-from server import read_db, write_db
+from .. import read_db, write_db
 from grdb.database.models import Author, User
 from .utils.jwt import is_valid, assign_token, parse_token
 
@@ -64,9 +64,12 @@ def signin():
     db = read_db.Session()
     user = db.query(User).filter_by(email=email).first()
     db.close()
-    token = assign_token(user.email)
 
-    if user and check_password_hash(user.password_hash, password):
+    if not user:
+        return make_response("Incorrect email or password")
+
+    token = assign_token(user.email)
+    if check_password_hash(user.password_hash, password):
         return jsonify({'token': token})
     else:
-        return make_response('Incorrect username or password', 403)
+        return make_response('Incorrect email or password', 403)
