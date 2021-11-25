@@ -10,8 +10,8 @@ from sqlalchemy import (
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.ext.hybrid import hybrid_property
 
-from src.grdb.database import Base
-from src.grdb.database.models.author import ExperimentToAuthorAssociation
+from grdb.database import Base
+from grdb.database.models.author import ExperimentToAuthorAssociation
 
 
 class Experiment(Base):

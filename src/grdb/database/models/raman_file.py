@@ -2,7 +2,7 @@ from sqlalchemy import Column, String, Integer, ForeignKey, Float, Boolean
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.ext.hybrid import hybrid_property
 
-from src.grdb.database import Base
+from grdb.database import Base
 
 
 class RamanFile(Base):
