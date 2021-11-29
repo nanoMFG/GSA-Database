@@ -49,9 +49,9 @@ def signin():
     token = request.headers.environ.get('HTTP_AUTHORIZATION')
     if token:
         if is_valid(token):
-            email, _ = parse_token(token)
-            token = assign_token(email)
-            return jsonify({'token': token})
+            email, author_id, _ = parse_token(token)
+            token = assign_token(email, author_id)
+            return jsonify({'token': token, 'email': email, 'author_id': author_id})
         else:
             return make_response('Token is expired', 400)
 
@@ -66,10 +66,10 @@ def signin():
     db.close()
 
     if not user:
-        return make_response("Incorrect email or password")
+        return make_response("Incorrect email or password", 403)
 
-    token = assign_token(user.email)
+    token = assign_token(user.email, user.author_id)
     if check_password_hash(user.password_hash, password):
-        return jsonify({'token': token})
+        return jsonify({'token': token, 'email': user.email, 'author_id': user.author_id})
     else:
         return make_response('Incorrect email or password', 403)
