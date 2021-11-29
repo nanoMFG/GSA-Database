@@ -17,18 +17,19 @@ def test():
     return "test"
 
 
-@index.route('/db/tables/all', methods=['GET'])
+@index.route('/tool/init', methods=['GET'])
 def all_tables():
-    env_conditions = EnvironmentConditions.query.all()
+    db = read_db.Session()
+    env_conditions = db.query(EnvironmentConditions).all()
     env_conditions_json = [env_condition.json_encodable() for env_condition in env_conditions]
 
-    furnaces = Furnace.query.all()
+    furnaces = db.query(Furnace).all()
     furnaces_json = [f.json_encodable() for f in furnaces]
 
-    properties = Properties.query.all()
+    properties = db.query(Properties).all()
     properties_json = [p.json_encodable() for p in properties]
 
-    recipes = Recipe.query.all()
+    recipes = db.query(Recipe).all()
     recipes_json = []
     for r in recipes:
         recipe_json = r.json_encodable()
@@ -37,12 +38,12 @@ def all_tables():
         recipe_json['preparation_steps'] = prep_steps_json
         recipes_json.append(recipe_json)
 
-    substrates = Substrate.query.all()
+    substrates = db.query(Substrate).all()
     substrates_json = [s.json_encodable() for s in substrates]
 
-    authors = Author.query.all()
+    authors = db.query(Author).all()
     authors_json = [a.json_encodable() for a in authors]
-
+    db.close()
     return {
         'environmental_conditions': env_conditions_json,
         'furnaces': furnaces_json,
@@ -55,7 +56,9 @@ def all_tables():
 
 @index.route('/experiments/<int:experiment_id>', methods=['GET'])
 def get_experiment(experiment_id):
-    experiment = Experiment.query.filter_by(id=experiment_id).first()
+    db = read_db.Session()
+    experiment = db.query(Experiment).filter_by(id=experiment_id).first()
+    db.close()
     return jsonify(experiment.json_encodable())
 
 
@@ -69,26 +72,27 @@ def filtered_experiments():
     property_filters = body.get('propertyFilters')
     author_filters = body.get('authorFilters')
 
+    db = read_db.Session()
     experiments = []
     if environmental_condition_filters:
         env_cond_ids = [evn_cond.get('id') for evn_cond in environmental_condition_filters]
-        experiments += Experiment.query.filter(Experiment.environment_conditions_id.in_(env_cond_ids)).all()
+        experiments += db.query(Experiment).filter(Experiment.environment_conditions_id.in_(env_cond_ids)).all()
 
     if furnace_filters:
         furnace_ids = [furnace.get('id') for furnace in furnace_filters]
-        experiments += Experiment.query.filter(Experiment.furnace_id.in_(furnace_ids)).all()
+        experiments += db.query(Experiment).filter(Experiment.furnace_id.in_(furnace_ids)).all()
 
     if substrate_filters:
         substrate_ids = [substrate.get('id') for substrate in substrate_filters]
-        experiments += Experiment.query.filter(Experiment.substrate_id.in_(substrate_ids))
+        experiments += db.query(Experiment).filter(Experiment.substrate_id.in_(substrate_ids))
 
     if author_filters:
         author_ids = [author.get('id') for author in author_filters]
-        experiments += Experiment.query.filter(Experiment.recipe_id.in_(author_ids))
+        experiments += db.query(Experiment).filter(Experiment.recipe_id.in_(author_ids))
 
     if recipe_filters:
         recipe_ids = [recipe.get('id') for recipe in recipe_filters]
-        experiments += Experiment.query.filter(Experiment.recipe_id.in_(recipe_ids))
+        experiments += db.query(Experiment).filter(Experiment.recipe_id.in_(recipe_ids))
 
     experiment_ids = set()
     for e in experiments:
@@ -96,18 +100,18 @@ def filtered_experiments():
 
     if property_filters:
         property_ids = [p.get('id') for p in property_filters]
-        properties = Properties.query.filter(Properties.id.in_(property_ids)).all()
+        properties = db.query(Properties).filter(Properties.id.in_(property_ids)).all()
         for p in properties:
             experiment_ids.add(p.experiment.id)
-
+    db.close()
     return jsonify(list(experiment_ids))
 
 
 @index.route('/experiments/data', methods=['GET'])
 def experiment_data():
     params = request.args
-    session = read_db.Session()
-    q = session.query(Experiment)
+    db = read_db.Session()
+    q = db.query(Experiment)
 
     # CURRENTLY SUPPORTED COLUMNS: recipe, substrate, furnace
     experiments = query_experiment_data(q, params)
@@ -161,5 +165,5 @@ def experiment_data():
             exp_dict['shape'] = e.properties.shape
 
         output.append(exp_dict)
-    session.close()
+    db.close()
     return jsonify(output)
