@@ -58,8 +58,9 @@ def all_tables():
 def get_experiment(experiment_id):
     db = read_db.Session()
     experiment = db.query(Experiment).filter_by(id=experiment_id).first()
+    experiment_json = experiment.json_encodable()
     db.close()
-    return jsonify(experiment.json_encodable())
+    return jsonify(experiment_json)
 
 
 @index.route('/experiments/filter', methods=['POST'])
