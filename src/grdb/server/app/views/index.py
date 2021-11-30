@@ -1,10 +1,10 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, make_response
 from flask_cors import CORS
 from grdb.database.models import (
     Furnace, Substrate, EnvironmentConditions, Recipe, PreparationStep, Experiment, Author, SemFile, SemAnalysis,
     Software, RamanFile, RamanAnalysis, Properties, User
 )
-
+from datetime import datetime
 from .. import read_db, write_db
 from .utils.query import query_experiment_data
 
@@ -52,6 +52,136 @@ def all_tables():
         'substrates': substrates_json,
         'authors': authors_json,
     }
+
+
+@index.route('/experiments/submit', methods=['POST'])
+def submit_experiment():
+    db = write_db.Session()
+    body = request.get_json()
+    try:
+        if body.get('useCustomEnvironmentalConditions'):
+            ambient_temperature = body.get('useCustomEnvironmentalConditions') \
+                if body.get('useCustomEnvironmentalConditions') else None
+            dew_point = body.get('ambientTemperature') if body.get('ambientTemperature') else None
+            env_con = EnvironmentConditions(dew_point=dew_point,
+                                            ambient_temperature=ambient_temperature)
+            db.add(env_con)
+            db.flush()
+            environment_conditions_id = env_con.id
+        else:
+            environment_conditions_id = body.get('environmentalConditionsNumber')
+
+        if body.get('useCustomFurnace'):
+            tube_diameter = body.get('tubeDiameter') if body.get('tubeDiameter') else None
+            cross_sectional_area = body.get('crossSectionalArea') if body.get('crossSectionalArea') else None
+            tube_length = body.get('tubeLength') if body.get('tubeLength') else None
+            length_of_heated_region = body.get('lengthOfHeatedRegion') if body.get('lengthOfHeatedRegion') else None
+            furnace = Furnace(tube_diameter=tube_diameter,
+                              cross_sectional_area=cross_sectional_area,
+                              tube_length=tube_length,
+                              length_of_heated_region=length_of_heated_region)
+            db.add(furnace)
+            db.flush()
+            furnace_id = furnace.id
+        else:
+            furnace_id = body.get('furnaceNumber')
+
+        if body.get('useCustomSubstrate'):
+            catalyst = body.get('catalyst') if body.get('catalyst') else None
+            thickness = body.get('thickness') if body.get('thickness') else None
+            diameter = body.get('diameter') if body.get('diameter') else None
+            length = body.get('length') if body.get('length') else None
+            surface_area = body.get('surfaceArea') if body.get('surfaceArea') else None
+            substrate = Substrate(catalyst=catalyst,
+                                  thickness=thickness,
+                                  diameter=diameter,
+                                  length=length,
+                                  surface_area=surface_area)
+            db.add(substrate)
+            db.flush()
+            substrate_id = substrate.id
+        else:
+            substrate_id = body.get('substrateNumber')
+
+        if body.get('useCustomRecipe'):
+            carbon_source = body.get('carbonSource') if body.get('carbonSource') else None
+            base_pressure = body.get('basePressure') if body.get('basePressure') else None
+            recipe = Recipe(carbon_source=carbon_source,
+                            base_pressure=base_pressure)
+            db.add(recipe)
+            db.flush()
+            recipe_id = recipe.id
+        else:
+            recipe_id = body.get('recipeNumber')
+
+        for i, prep_step in enumerate(body.get('preparationSteps')):
+            name = prep_step.get('name') if prep_step.get('name') else None
+            duration = prep_step.get('duration') if prep_step.get('duration') else None
+            furnace_temperature = prep_step.get('furnaceTemperature') if prep_step.get('furnaceTemperature') else None
+            furnace_pressure = prep_step.get('furnacePressure') if prep_step.get('furnacePressure') else None
+            sample_location = prep_step.get('sampleLocation') if prep_step.get('sampleLocation') else None
+            helium_flow_rate = prep_step.get('heliumFlowRate') if prep_step.get('heliumFlowRate') else None
+            hydrogen_flow_rate = prep_step.get('hydrogenFlowRate') if prep_step.get('hydrogenFlowRate') else None
+            carbon_source_flow_rate = prep_step.get('carbonSourceFlowRate') \
+                if prep_step.get('carbonSourceFlowRate') else None
+            argon_flow_rate = prep_step.get('argonFlowRate') if prep_step.get('argonFlowRate') else None
+            cooling_rate = prep_step.get('coolingRate') if prep_step.get('coolingRate') else None
+            preparation_step = PreparationStep(recipe_id=recipe_id,
+                                               step=i,
+                                               name=name,
+                                               duration=duration,
+                                               furnace_temperature=furnace_temperature,
+                                               furnace_pressure=furnace_pressure,
+                                               sample_location=sample_location,
+                                               helium_flow_rate=helium_flow_rate,
+                                               hydrogen_flow_rate=hydrogen_flow_rate,
+                                               carbon_source_flow_rate=carbon_source_flow_rate,
+                                               argon_flow_rate=argon_flow_rate,
+                                               cooling_rate=cooling_rate)
+            db.add(preparation_step)
+
+        experiment = Experiment(recipe_id=recipe_id,
+                                environment_conditions_id=environment_conditions_id,
+                                substrate_id=substrate_id,
+                                furnace_id=furnace_id,
+                                submitted_by=body.get('authors')[0].get('id'),
+                                experiment_date=datetime.now(),
+                                material_name=body.get('material_name'))
+        db.add(experiment)
+        db.flush()
+
+        if body.get('useCustomProperties'):
+            average_thickness_of_growth = body.get('avgThicknessOfGrowth') if body.get('avgThicknessOfGrowth') else None
+            standard_deviation_of_growth = body.get('stdDevOfGrowth') if body.get('stdDevOfGrowth') else None
+            number_of_layers = body.get('numberOfLayers') if body.get('numberOfLayers') else None
+            growth_coverage = body.get('growthCoverage') if body.get('growthCoverage') else None
+            domain_size = body.get('domainSize') if body.get('domainSize') else None
+            shape = body.get('shape') if body.get('shape') else None
+            properties = Properties(experiment_id=experiment.id,
+                                    average_thickness_of_growth=average_thickness_of_growth,
+                                    standard_deviation_of_growth=standard_deviation_of_growth,
+                                    number_of_layers=number_of_layers,
+                                    growth_coverage=growth_coverage,
+                                    domain_size=domain_size,
+                                    shape=shape)
+            db.add(properties)
+            db.flush()
+        else:
+            properties = db.query(Properties).filter_by(id=body.get('propertiesNumber')).first()
+            new_properties = Properties(experiment_id=experiment.id,
+                                        average_thickness_of_growth=properties.average_thickness_of_growth,
+                                        standard_deviation_of_growth=properties.standard_deviation_of_growth,
+                                        number_of_layers=properties.number_of_layers,
+                                        growth_coverage=properties.growth_coverage,
+                                        domain_size=properties.domain_size,
+                                        shape=properties.shape)
+            db.add(new_properties)
+        db.commit()
+    except Exception as e:
+        db.rollback()
+        return make_response("Error occurred", 400)
+    db.close()
+    return make_response("Submission successful", 200)
 
 
 @index.route('/experiments/<int:experiment_id>', methods=['GET'])
