@@ -20,16 +20,16 @@ def test():
 @index.route('/tool/init', methods=['GET'])
 def all_tables():
     db = read_db.Session()
-    env_conditions = db.query(EnvironmentConditions).all()
+    env_conditions = db.query(EnvironmentConditions).order_by(EnvironmentConditions.id.desc()).all()
     env_conditions_json = [env_condition.json_encodable() for env_condition in env_conditions]
 
-    furnaces = db.query(Furnace).all()
+    furnaces = db.query(Furnace).order_by(Furnace.id.desc()).all()
     furnaces_json = [f.json_encodable() for f in furnaces]
 
-    properties = db.query(Properties).all()
+    properties = db.query(Properties).order_by(Properties.id.desc()).all()
     properties_json = [p.json_encodable() for p in properties]
 
-    recipes = db.query(Recipe).all()
+    recipes = db.query(Recipe).order_by(Recipe.id.desc()).all()
     recipes_json = []
     for r in recipes:
         recipe_json = r.json_encodable()
@@ -38,10 +38,10 @@ def all_tables():
         recipe_json['preparation_steps'] = prep_steps_json
         recipes_json.append(recipe_json)
 
-    substrates = db.query(Substrate).all()
+    substrates = db.query(Substrate).order_by(Substrate.id.desc()).all()
     substrates_json = [s.json_encodable() for s in substrates]
 
-    authors = db.query(Author).all()
+    authors = db.query(Author).order_by(Author.id.desc()).all()
     authors_json = [a.json_encodable() for a in authors]
     db.close()
     return {
