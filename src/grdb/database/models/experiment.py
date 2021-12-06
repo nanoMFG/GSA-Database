@@ -183,7 +183,6 @@ class Experiment(Base):
     #     return ", ".join(sorted([a.last_name for a in self.authors if a.last_name]))
 
     def json_encodable(self):
-        print(self.authors)
         return {
             "id": self.id,
             "material_name": self.material_name,

@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Query
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 
-from ..index import (
+from ..experiments import (
     Author, EnvironmentConditions, Experiment, Furnace, Recipe, Substrate, Properties)
 
 

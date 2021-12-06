@@ -9,6 +9,8 @@ from .db import Database
 read_db = Database(Base)
 write_db = Database(Base)
 admin_db = Database(Base)
+
+
 # read_db = DataAccessLayer()
 # conf = Config(prefix="DEV_DATABASE", suffix="_READ", debug=True, try_secrets=False)
 # read_db.init_db(conf, privileges={"read": True, "write": False, "validate": False})
@@ -18,8 +20,8 @@ admin_db = Database(Base)
 
 
 def register_blueprints(app):
-    from .views import index
-    app.register_blueprint(index)
+    from .views import experiments
+    app.register_blueprint(experiments)
     from .views.auth import auth
     app.register_blueprint(auth)
 
@@ -34,9 +36,27 @@ def create_app():
     write_db.init(app.config["DEV_DATABASE_URL_WRITE"])
     admin_db.init(app.config["DEV_DATABASE_URL_ADMIN"])
 
-    # create user table for webapp
-    from grdb.database.models import User
-    Base.metadata.create_all(bind=admin_db.engine)
+    # ***************** move below to notebook ***********************
+    # # create tables for webapp
+    # from grdb.database.models import User
+    # from grdb.database.models import Institution
+    # Base.metadata.create_all(bind=admin_db.engine)
+    #
+    # #init school database
+    # import json
+    # file = open('/Users/jlee/gresq/GSA-Database/src/grdb/server/allSchools.json') #fix url as needed
+    # schools = json.load(file)
+    # schools.sort(key=lambda s: s['name'])
+    # db = admin_db.Session()
+    # i = 0
+    # for school in schools:
+    #     institution = Institution(name=school['name'], country=school['country'])
+    #     db.add(institution)
+    #     if i % 2000 == 0:
+    #         print(i, '/', len(schools))
+    #     i += 1
+    # db.commit()
+    # db.close()
 
     register_blueprints(app)
     return app
