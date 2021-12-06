@@ -4,6 +4,8 @@ from sqlalchemy.ext.hybrid import hybrid_property
 
 from grdb.database import Base
 
+from urllib.request import urlopen
+
 
 class RamanFile(Base):
     """[summary]
@@ -17,7 +19,7 @@ class RamanFile(Base):
 
     # Integer primary key
     id = Column(Integer, primary_key=True, info={"verbose_name": "ID"})
-    
+
     # Foreign key for relationship to Experiment.
     experiment_id = Column(Integer, ForeignKey("experiment.id", ondelete="CASCADE"), index=True)
 
@@ -66,3 +68,15 @@ class RamanFile(Base):
                 "unit": info["std_unit"] if "std_unit" in info else None,
             }
         return json_dict
+
+    def read_file(self):
+        """
+        Fetch the raman file from the url and returns the file in json encodable form
+        """
+        file = urlopen(self.url)
+        data = []
+        for line in file:
+            line = line.decode('utf-8').split()
+            line = list(map(float, line))
+            data.append({'x': line[0], 'y': line[1]})
+        return {'data': data}

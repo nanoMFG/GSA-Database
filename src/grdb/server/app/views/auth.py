@@ -2,7 +2,7 @@ from flask import Blueprint, request, make_response, jsonify
 from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
 from .. import read_db, write_db
-from grdb.database.models import Author, User
+from grdb.database.models import Author, User, Institution
 from .utils.jwt import is_valid, assign_token, parse_token
 
 auth = Blueprint('auth', __name__, url_prefix='/auth')
@@ -38,10 +38,11 @@ def signup():
         )
         db.add(user)
         db.commit()
-
+        db.close()
         return make_response('User registered.', 201)
     else:
-        return make_response('User already exists', 409)
+        db.close()
+        return make_response('User already exists.', 409)
 
 
 @auth.route("/signin", methods=['post'])
@@ -73,3 +74,21 @@ def signin():
         return jsonify({'token': token, 'email': user.email, 'author_id': user.author_id})
     else:
         return make_response('Incorrect email or password', 403)
+
+
+@auth.route("/countries", methods=["GET"])
+def get_countries():
+    db = read_db.Session()
+    countries = db.query(Institution.country.distinct()).order_by(Institution.country).all()
+    countries = list(map(lambda country: country[0], countries))
+    db.close()
+    return jsonify(countries)
+
+
+@auth.route("/institutions/<string:country>", methods=["GET"])
+def get_institutions(country):
+    db = read_db.Session()
+    institutions = db.query(Institution.name).filter_by(country=country).order_by(Institution.name).all()
+    institutions = list(map(lambda institution: institution[0], institutions))
+    db.close()
+    return jsonify(institutions)

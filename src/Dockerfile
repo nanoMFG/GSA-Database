@@ -2,4 +2,4 @@ FROM python:3.9-alpine
 WORKDIR /flaskapp
 ADD . /flaskapp
 RUN pip install -r requirements.txt
-CMD ["python", "app.py"]
+CMD ["gunicorn", "-b", "0.0.0.0:5000", "grdb.server.app:create_app()"]
