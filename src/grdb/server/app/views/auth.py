@@ -77,7 +77,7 @@ def signin():
 
 
 @auth.route("/countries", methods=["GET"])
-def get_countries():
+def get_all_countries():
     db = read_db.Session()
     countries = db.query(Institution.country.distinct()).order_by(Institution.country).all()
     countries = list(map(lambda country: country[0], countries))
@@ -86,7 +86,7 @@ def get_countries():
 
 
 @auth.route("/institutions/<string:country>", methods=["GET"])
-def get_institutions(country):
+def get_institutions_by_country(country):
     db = read_db.Session()
     institutions = db.query(Institution.name).filter_by(country=country).order_by(Institution.name).all()
     institutions = list(map(lambda institution: institution[0], institutions))
