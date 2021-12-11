@@ -6,7 +6,6 @@ from grdb.database.models import (
 )
 from datetime import datetime
 from .. import read_db, write_db
-from .utils.query import query_experiment_data
 
 experiments = Blueprint('experiments', __name__, url_prefix='/experiments')
 CORS(experiments)
@@ -104,7 +103,7 @@ def submit_experiment():
             recipe = Recipe(carbon_source=carbon_source,
                             base_pressure=base_pressure)
             db.add(recipe)
-            db.flush()
+            db.flush()  # flush to get recipe.id
             recipe_id = recipe.id
         else:
             recipe_id = body.get('recipeNumber')
@@ -143,7 +142,7 @@ def submit_experiment():
                                 experiment_date=datetime.now(),
                                 material_name=body.get('material_name'))
         db.add(experiment)
-        db.flush()
+        db.flush()  # flush to get experiment.id
 
         if body.get('useCustomProperties'):
             average_thickness_of_growth = body.get('avgThicknessOfGrowth') if body.get('avgThicknessOfGrowth') else None
@@ -245,65 +244,3 @@ def filter_experiments():
             experiment_ids.add(p.experiment.id)
     db.close()
     return jsonify(list(experiment_ids))
-
-
-@experiments.route('/data', methods=['GET'])
-def experiment_data():
-    params = request.args
-    db = read_db.Session()
-    q = db.query(Experiment)
-
-    # CURRENTLY SUPPORTED COLUMNS: recipe, substrate, furnace
-    experiments = query_experiment_data(q, params)
-    output = []
-    for e in experiments:
-        exp_dict = {'carbon_source': None,
-                    'base_pressure': None,
-                    'catalyst': None,
-                    'dew_point': None,
-                    'ambient_temperature': None,
-                    'thickness': None,
-                    'diameter': None,
-                    'length': None,
-                    'surface_area': None,
-                    'tube_diameter': None,
-                    'cross_sectional_area': None,
-                    'tube_length': None,
-                    'length_of_heated_region': None,
-                    'average_thickness_of_growth': None,
-                    'standard_deviation_of_growth': None,
-                    'number_of_layers': None,
-                    'growth_coverage': None,
-                    'domain_size': None,
-                    'shape': None,
-                    'date': e.experiment_date,
-                    'material': e.material_name
-                    }
-        if e.recipe:
-            exp_dict['carbon_source'] = e.recipe.carbon_source
-            exp_dict['base_pressure'] = e.recipe.base_pressure
-        if e.substrate:
-            exp_dict['catalyst'] = e.substrate.catalyst
-            exp_dict['thickness'] = e.substrate.thickness
-            exp_dict['diameter'] = e.substrate.diameter
-            exp_dict['length'] = e.substrate.length
-            exp_dict['surface_area'] = e.substrate.surface_area
-        if e.environment_conditions:
-            exp_dict['dew_point'] = e.environment_conditions.dew_point
-            exp_dict['ambient_temperature'] = e.environment_conditions.ambient_temperature
-        if e.furnace:
-            exp_dict['tube_diameter'] = e.furnace.tube_diameter
-            exp_dict['cross_sectional_area'] = e.furnace.cross_sectional_area
-            exp_dict['tube_length'] = e.furnace.tube_length
-            exp_dict['length_of_heated_region'] = e.furnace.length_of_heated_region
-        if e.properties:
-            exp_dict['average_thickness_of_growth'] = e.properties.average_thickness_of_growth
-            exp_dict['standard_deviation_of_growth'] = e.properties.standard_deviation_of_growth
-            exp_dict['number_of_layers'] = e.properties.number_of_layers
-            exp_dict['growth_coverage'] = e.properties.growth_coverage
-            exp_dict['domain_size'] = e.properties.domain_size
-            exp_dict['shape'] = e.properties.shape
-
-        output.append(exp_dict)
-    db.close()
-    return jsonify(output)

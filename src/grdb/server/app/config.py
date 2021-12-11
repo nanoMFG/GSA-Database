@@ -6,6 +6,10 @@ load_dotenv(path.join(base_dir, '../.env'), override=True)
 
 
 class Config:
+    """
+    Config class that will be used for flask app config.
+    Store .env file in "src/grdb/server" folder
+    """
     DB_HOST = environ.get('DB_HOST')
 
     DEV_URL = environ.get('DEV_URL')
