@@ -18,7 +18,7 @@ def signup():
     email = data.get('email')
     password = data.get('password')
 
-    if not (first_name and last_name and email and password):
+    if not (first_name and last_name and institution and email and password):
         return make_response('Missing required field.', 400)
 
     password_hash = generate_password_hash(password)
