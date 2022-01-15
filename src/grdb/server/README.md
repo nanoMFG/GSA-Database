@@ -79,6 +79,6 @@ Overall introduction to API endpoints. Refer to the code base for details.
 
 ---
 
-```/auth/insitutions/<country>```
+```/auth/institutions/<country>```
 
 [GET] Fetch institutions by country (used for sign up).
