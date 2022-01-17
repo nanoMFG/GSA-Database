@@ -18,7 +18,9 @@ However, depending on the use case, feel free to deploy the app without docker.
 
 Before deployment, make sure that the Flask environment settings to production.
 
-To deploy the app. ```cd``` into ```src``` and run ```docker-compose up --build``` in terminal.
+To deploy the app, make sure you have pasted ```.env```file as ```src/grdb/server/.env```.
+
+Next, ```cd``` into ```src``` and run ```docker-compose up --build``` in terminal.
 
 
 ## File Structure
@@ -28,8 +30,6 @@ To deploy the app. ```cd``` into ```src``` and run ```docker-compose up --build`
 ```src/grdb/server``` stores the Flask app.
 
 ```src/grdb/server/app``` is the [Flask application factory](https://flask.palletsprojects.com/en/2.0.x/patterns/appfactories/)
-
-** Store the environment file as ```src/grdb/server/.env``` **
 
 ## API
 
