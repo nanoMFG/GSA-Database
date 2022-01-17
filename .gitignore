@@ -105,7 +105,7 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
+src/server/.env
 .venv
 env/
 venv/
@@ -130,3 +130,12 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+/server/.env
+
+# temporary files
+:memory
+/src/grdb/server/.env
+
+# IDE files
+.vscode
+.idea

@@ -26,7 +26,6 @@ class Experiment(Base):
 
     __table_args__ = {'extend_existing': True}
 
-
     id = Column(
         Integer,
         primary_key=True,
@@ -63,21 +62,21 @@ class Experiment(Base):
         index=True,
     )
     ## The name of the analysis software
-    #software_name = Column(String(20), info={"verbose_name": "Analysis Software"})
+    # software_name = Column(String(20), info={"verbose_name": "Analysis Software"})
     ## The version of the analysis software
-    #software_version = Column(String(20), info={"verbose_name": "Software Version"})
+    # software_version = Column(String(20), info={"verbose_name": "Software Version"})
 
     # The primary SEM file associated with this experiment
     primary_sem_file_id = Column(Integer, index=True)
 
     # The user/author that submitted this experiment
     submitted_by = Column(Integer, ForeignKey('author.id'), info={"verbose_name": "Submitted By"})
-    
+
     # The date the experiment was conducted
     experiment_date = Column(
         Date, info={"verbose_name": "Experiment Date", "required": True}
     )
-    
+
     # The material grown
     material_name = Column(
         String(32),
@@ -90,7 +89,7 @@ class Experiment(Base):
 
     # Status of experiment valdation
     validated = Column(Boolean, info={"verbose_name": "Validated"}, default=False)
-    
+
     # The authors that conducted the experiment
     authors = relationship("Author", secondary="EXP_TO_ATHR_ASSCTN", back_populates="authored_experiments")
 
@@ -98,7 +97,7 @@ class Experiment(Base):
     @hybrid_property
     def authors_string(self):
         return [a.author_last_names for a in self.authors]
-    
+
     # MANY-TO-ONE: experiments->recipe
     recipe = relationship("Recipe", back_populates="experiments")
 
@@ -183,12 +182,16 @@ class Experiment(Base):
     # def author_last_names(self):
     #     return ", ".join(sorted([a.last_name for a in self.authors if a.last_name]))
 
-    # def json_encodable(self):
-    #     return {
-    #         "primary_key": self.id,
-    #         "material_name": self.material_name,
-    #         "experiment_date": self.experiment_date.timetuple(),
-    #         "authors": [s.json_encodable() for s in self.authors],
-    #         "recipe": self.recipe.json_encodable(),
-    #         "properties": self.properties.json_encodable(),
-    #     }
+    def json_encodable(self):
+        return {
+            "id": self.id,
+            "material_name": self.material_name,
+            "experiment_date": self.experiment_date.timetuple() if self.experiment_date else None,
+            "authors": [s.json_encodable() if s else None for s in self.authors],
+            "recipe": self.recipe.json_encodable() if self.recipe else None,
+            "properties": self.properties.json_encodable() if self.properties else None,
+            "furnace": self.furnace.json_encodable() if self.furnace else None,
+            "substrate": self.substrate.json_encodable() if self.substrate else None,
+            "environmental_conditions": self.environment_conditions.json_encodable() if self.environment_conditions else None,
+            "validated": self.validated
+        }

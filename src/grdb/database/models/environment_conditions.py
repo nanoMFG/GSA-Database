@@ -4,6 +4,7 @@ from sqlalchemy.ext.hybrid import hybrid_property
 
 from grdb.database import Base
 
+
 class EnvironmentConditions(Base):
     """[summary]
     
@@ -40,4 +41,24 @@ class EnvironmentConditions(Base):
             "tooltip": "Temperature of the ambient environment",
         },
     )
-    
+
+    def json(self):
+        return {
+            'id': self.id,
+            'dew_point': self.dew_point,
+            'ambient_temperature': self.ambient_temperature
+        }
+
+    def json_encodable(self):
+        params = [
+            "dew_point",
+            "ambient_temperature",
+        ]
+        json_dict = {'id': self.id}
+        for p in params:
+            info = getattr(EnvironmentConditions, p).info
+            json_dict[p] = {
+                "value": getattr(self, p),
+                "unit": info["std_unit"] if "std_unit" in info else None,
+            }
+        return json_dict

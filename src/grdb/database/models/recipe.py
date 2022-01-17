@@ -66,9 +66,9 @@ class Recipe(Base):
         PreparationStep = class_registry["PreparationStep"]
         return (
             select([func.max(PreparationStep.furnace_temperature)])
-            .where(PreparationStep.recipe_id == cls.id)
-            .correlate(cls)
-            .label("maximum_temperature")
+                .where(PreparationStep.recipe_id == cls.id)
+                .correlate(cls)
+                .label("maximum_temperature")
         )
 
     @hybrid_property
@@ -86,9 +86,9 @@ class Recipe(Base):
         PreparationStep = class_registry["PreparationStep"]
         return (
             select([func.max(PreparationStep.furnace_pressure)])
-            .where(PreparationStep.recipe_id == cls.id)
-            .correlate(cls)
-            .label("maximum_pressure")
+                .where(PreparationStep.recipe_id == cls.id)
+                .correlate(cls)
+                .label("maximum_pressure")
         )
 
     @hybrid_property
@@ -105,9 +105,9 @@ class Recipe(Base):
         PreparationStep = class_registry["PreparationStep"]
         return (
             select([func.avg(PreparationStep.carbon_source_flow_rate)])
-            .where(PreparationStep.recipe_id == cls.id)
-            .correlate(cls)
-            .label("average_carbon_flow_rate")
+                .where(PreparationStep.recipe_id == cls.id)
+                .correlate(cls)
+                .label("average_carbon_flow_rate")
         )
 
     # NOTE: This is really the carbon source from the first step.
@@ -146,13 +146,13 @@ class Recipe(Base):
         PreparationStep = class_registry["PreparationStep"]
         s = (
             select([PreparationStep.helium_flow_rate])
-            .where(
+                .where(
                 and_(
                     PreparationStep.helium_flow_rate != None,
                     PreparationStep.recipe_id == cls.id,
                 )
             )
-            .correlate(cls)
+                .correlate(cls)
         )
         return exists(s)
 
@@ -165,13 +165,13 @@ class Recipe(Base):
         PreparationStep = class_registry["PreparationStep"]
         s = (
             select([PreparationStep.argon_flow_rate])
-            .where(
+                .where(
                 and_(
                     PreparationStep.argon_flow_rate != None,
                     PreparationStep.recipe_id == cls.id,
                 )
             )
-            .correlate(cls)
+                .correlate(cls)
         )
         return exists(s)
 
@@ -184,12 +184,30 @@ class Recipe(Base):
         PreparationStep = class_registry["PreparationStep"]
         s = (
             select([PreparationStep.hydrogen_flow_rate])
-            .where(
+                .where(
                 and_(
                     PreparationStep.hydrogen_flow_rate != None,
                     PreparationStep.recipe_id == cls.id,
                 )
             )
-            .correlate(cls)
+                .correlate(cls)
         )
         return exists(s)
+
+    def json_encodable(self):
+        params = [
+            "carbon_source",
+            "base_pressure",
+        ]
+        json_dict = {'id': self.id}
+        for p in params:
+            info = getattr(Recipe, p).info
+            json_dict[p] = {
+                "value": getattr(self, p),
+                "unit": info["std_unit"] if "std_unit" in info else None,
+            }
+        json_dict['preparation_steps'] = None
+        if self.preparation_steps:
+            json_dict['preparation_steps'] = [p.json_encodable()
+                                              for p in self.preparation_steps]
+        return json_dict
