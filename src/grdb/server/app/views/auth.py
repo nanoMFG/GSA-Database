@@ -59,7 +59,7 @@ def signin():
     data = request.get_json()
     email = data.get('email')
     password = data.get('password')
-    if not (email or password):
+    if not (email and password):
         return make_response("Missing required fields.", 400)
 
     db = read_db.Session()
