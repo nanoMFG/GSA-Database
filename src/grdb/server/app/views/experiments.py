@@ -4,7 +4,7 @@ from grdb.database.models import (
     Furnace, Substrate, EnvironmentConditions, Recipe, PreparationStep, Experiment, Author, SemFile, SemAnalysis,
     Software, RamanFile, RamanAnalysis, Properties, User
 )
-from .utils import aws_s3
+# from .utils import aws_s3
 from datetime import datetime
 from .. import read_db, write_db
 
