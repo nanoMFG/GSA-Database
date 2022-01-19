@@ -4,6 +4,7 @@ from grdb.database.models import (
     Furnace, Substrate, EnvironmentConditions, Recipe, PreparationStep, Experiment, Author, SemFile, SemAnalysis,
     Software, RamanFile, RamanAnalysis, Properties, User
 )
+from .utils import aws_s3
 from datetime import datetime
 from .. import read_db, write_db
 
@@ -227,7 +228,7 @@ def filter_experiments():
 
     if author_filters:
         author_ids = [author.get('id') for author in author_filters]
-        experiments += db.query(Experiment).filter(Experiment.recipe_id.in_(author_ids))
+        experiments += db.query(Experiment).filter(Experiment.authors.any(Author.id.in_(author_ids)))
 
     if recipe_filters:
         recipe_ids = [recipe.get('id') for recipe in recipe_filters]
