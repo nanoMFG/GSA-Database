@@ -1,18 +1,14 @@
 import factory
 
-from grdb.database.v1_1_0.models import Substrate
-from grdb.database.v1_1_0.dal import dal
+from grdb.database.models import Substrate
+from .common import test_db
+
 
 class SubstrateFactory(factory.alchemy.SQLAlchemyModelFactory):
     class Meta:
         model = Substrate
-        sqlalchemy_session = dal.Session()
-        sqlalchemy_session_persistence = "commit"
-    
-    # MANY-TO-ONE: substrate->experiment
-    experiments = factory.RelatedFactoryList(
-        "test.database.factories.ExperimentFactory", "experiment", size=3
-    )
+        sqlalchemy_session = test_db.Session
+        sqlalchemy_session_persistence = "flush"
 
     catalyst = factory.Iterator(Substrate.catalyst.info["choices"])
     thickness = factory.Faker(
@@ -24,6 +20,6 @@ class SubstrateFactory(factory.alchemy.SQLAlchemyModelFactory):
     length = factory.Faker(
         "pyfloat", positive=False, min_value=0.0, max_value=10.0
     )
-    surface_area= factory.Faker(
+    surface_area = factory.Faker(
         "pyfloat", positive=False, min_value=0.0, max_value=10.0
     )

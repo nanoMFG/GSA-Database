@@ -1,11 +1,13 @@
 from flask import Blueprint, jsonify, request, make_response
 from flask_cors import CORS
+from datetime import datetime
+from sqlalchemy import and_
+
 from grdb.database.models import (
     Furnace, Substrate, EnvironmentConditions, Recipe, PreparationStep, Experiment, Author, SemFile, SemAnalysis,
     Software, RamanFile, RamanAnalysis, Properties, User
 )
 # from .utils import aws_s3
-from datetime import datetime
 from .. import read_db, write_db
 
 experiments = Blueprint('experiments', __name__, url_prefix='/experiments')
@@ -204,44 +206,104 @@ def get_experiment(experiment_id):
 
 @experiments.route('/filter', methods=['POST'])
 def filter_experiments():
-    body = request.get_json()
-    environmental_condition_filters = body.get('environmentalConditionFilters')
-    furnace_filters = body.get('furnaceFilters')
-    substrate_filters = body.get('substrateFilters')
-    recipe_filters = body.get('recipeFilters')
-    property_filters = body.get('propertyFilters')
-    author_filters = body.get('authorFilters')
-
+    filters = request.get_json()
     db = read_db.Session()
-    experiments = []
-    if environmental_condition_filters:
-        env_cond_ids = [evn_cond.get('id') for evn_cond in environmental_condition_filters]
-        experiments += db.query(Experiment).filter(Experiment.environment_conditions_id.in_(env_cond_ids)).all()
+    author_filters = []
+    property_filters = []
+    environmental_condition_filters = []
+    furnace_filters = []
+    recipe_filters = []
+    substrate_filters = []
+    for filt in filters:
+        category = filt['category']
+        if category == 'author':
+            author_filters.append(filt)
+        elif category == 'property':
+            property_filters.append(filt)
+        elif category == 'environmentalCondition':
+            environmental_condition_filters.append(filt)
+        elif category == 'furnace':
+            furnace_filters.append(filt)
+        # elif category == 'recipe': TODO: how to filter recipe?
+        #     recipe_filters.append(filt)
+        elif category == 'substrate':
+            property_filters.append(filt)
 
-    if furnace_filters:
-        furnace_ids = [furnace.get('id') for furnace in furnace_filters]
-        experiments += db.query(Experiment).filter(Experiment.furnace_id.in_(furnace_ids)).all()
+    def extract_first_elem(x):
+        return list(map(lambda x: x[0], x))
 
-    if substrate_filters:
-        substrate_ids = [substrate.get('id') for substrate in substrate_filters]
-        experiments += db.query(Experiment).filter(Experiment.substrate_id.in_(substrate_ids))
+    result = db.query(Experiment.id).all()
+    result_ids = extract_first_elem(result)
+    exp_ids = set(result_ids)  # set of experiment ids
 
-    if author_filters:
-        author_ids = [author.get('id') for author in author_filters]
-        experiments += db.query(Experiment).filter(Experiment.authors.any(Author.id.in_(author_ids)))
+    author_ids = list(map(lambda x: x['id'], author_filters))
+    result = db.query(Experiment.id).filter(Experiment.authors.any(Author.id.in_(author_ids))).all()
+    result_ids = extract_first_elem(result)
+    exp_ids.intersection_update(result_ids)
 
-    if recipe_filters:
-        recipe_ids = [recipe.get('id') for recipe in recipe_filters]
-        experiments += db.query(Experiment).filter(Experiment.recipe_id.in_(recipe_ids))
+    joined = db.query(Experiment.id).join(Furnace)
+    for furnace_filter in furnace_filters:
+        filter_name = furnace_filter['name']
+        if 'Tube Diameter' in filter_name:
+            result = joined \
+                .filter(and_(Furnace.tube_diameter >= furnace_filter['min'],
+                             Furnace.tube_diameter <= furnace_filter['max'])) \
+                .all()
+        elif 'Cross Sectional Area' in filter_name:
+            result = joined \
+                .filter(and_(Furnace.cross_sectional_area >= furnace_filter['min'],
+                             Furnace.cross_sectional_area <= furnace_filter['max'])) \
+                .all()
+        elif 'Tube Length' in filter_name:
+            result = joined \
+                .filter(and_(Furnace.tube_length >= furnace_filter['min'],
+                             Furnace.tube_length <= furnace_filter['max'])) \
+                .all()
+        elif 'Length of Heated Region' in filter_name:
+            result = joined \
+                .filter(and_(Furnace.length_of_heated_region >= furnace_filter['min'],
+                             Furnace.length_of_heated_region <= furnace_filter['max'])) \
+                .all()
+        else:
+            result = []
+        result_ids = extract_first_elem(result)
+        exp_ids.intersection_update(result_ids)
 
-    experiment_ids = set()
-    for e in experiments:
-        experiment_ids.add(e.id)
+    joined = db.query(Experiment.id).join(Properties)
+    for property_filter in property_filters:
+        filter_name = property_filter['name']
+        if filter_name == 'Shape':
+            result = joined \
+                .filter(Properties.shape == property_filter['value']) \
+                .all()
+        elif 'Average Thickness of Growth' in filter_name:
+            result = joined \
+                .filter(and_(Properties.average_thickness_of_growth >= property_filter['min'],
+                             Properties.average_thickness_of_growth <= property_filter['max'])) \
+                .all()
+        elif 'Std. Dev. of Growth' in filter_name:
+            result = joined \
+                .filter(and_(Properties.standard_deviation_of_growth >= property_filter['min'],
+                             Properties.standard_deviation_of_growth <= property_filter['max'])) \
+                .all()
+        elif 'Number of Layers' == filter_name:
+            result = joined \
+                .filter(Properties.number_of_layers == property_filter['value']) \
+                .all()
+        elif 'Growth Coverage' in filter_name:
+            result = joined \
+                .filter(and_(Properties.growth_coverage >= property_filter['min'],
+                             Properties.growth_coverage <= property_filter['max'])) \
+                .all()
+        elif 'Domain Size' in filter_name:
+            result = joined \
+                .filter(and_(Properties.domain_size >= property_filter['min'],
+                             Properties.domain_size <= property_filter['max'])) \
+                .all()
+        else:
+            result = []
+        result_ids = extract_first_elem(result)
+        exp_ids.intersection_update(result_ids)
 
-    if property_filters:
-        property_ids = [p.get('id') for p in property_filters]
-        properties = db.query(Properties).filter(Properties.id.in_(property_ids)).all()
-        for p in properties:
-            experiment_ids.add(p.experiment.id)
     db.close()
-    return jsonify(list(experiment_ids))
+    return jsonify([])

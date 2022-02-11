@@ -1,8 +1,10 @@
+"""UNCOMMECT TO TEST v.1_1_0
+
 import pytest
 from math import isclose
 
 from grdb.database.v1_1_0 import dal, Base
-from grdb.database.v1_1_0.models import Software
+from grdb.database.v1_1_0.models_v_1_1_0 import Software
 from test.database.factories import SoftwareFactory
 
 RTOL = 1e-3
@@ -17,3 +19,4 @@ class TestSoftwareQueries:
     def test_simple(self, software):
         for row in software:
             print(f"id: {row.id}")
+"""

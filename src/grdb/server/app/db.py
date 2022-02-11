@@ -17,7 +17,7 @@ class Database:
         self.Session = None
         self.Base = base if base else None
 
-    def init(self, db_url: str, enable_model_query: bool = True):
+    def init(self, db_url: str, enable_model_query: bool = False):
         """
         Args:
             db_url (str): Database url to access the database.

@@ -1,8 +1,7 @@
-  
 import factory
 
-from grdb.database.v1_1_0.models import SemFile
-from grdb.database.v1_1_0.dal import dal
+from grdb.database.models import SemFile
+from .common import test_db
 
 LIST_SIZES = [1, 2, 3]
 
@@ -10,13 +9,11 @@ LIST_SIZES = [1, 2, 3]
 class SemFileFactory(factory.alchemy.SQLAlchemyModelFactory):
     class Meta:
         model = SemFile
-        sqlalchemy_session = dal.Session()
-        sqlalchemy_session_persistence = "commit"
+        sqlalchemy_session = test_db.Session
+        sqlalchemy_session_persistence = "flush"
 
-    sample = factory.SubFactory("test.database.factories.ExperimentFactory", sem_files=None)
-    analyses = factory.RelatedFactoryList(
-        "test.database.factories.SemAnalysisFactory", "sem_file", size=3
-    )
-
+    # experiment_id = factory.Sequence(lambda n:n)
+    experiment_id = None
     filename = factory.Faker("file_name", extension="tif")
     url = factory.Faker("url")
+    default_analysis_id = None

@@ -1,7 +1,7 @@
 import factory
 
-from grdb.database.v1_1_0.models import Properties
-from grdb.database.v1_1_0.dal import dal
+from grdb.database.models import Properties
+from .common import test_db
 
 LIST_SIZES = [1, 2, 3, 4, 5, 6]
 
@@ -9,10 +9,8 @@ LIST_SIZES = [1, 2, 3, 4, 5, 6]
 class PropertiesFactory(factory.alchemy.SQLAlchemyModelFactory):
     class Meta:
         model = Properties
-        sqlalchemy_session = dal.Session()
-        sqlalchemy_session_persistence = "commit"
-
-    experiment_id = 2
+        sqlalchemy_session = test_db.Session
+        sqlalchemy_session_persistence = "flush"
 
     average_thickness_of_growth = factory.Faker(
         "pyfloat", positive=False, min_value=0.0, max_value=10.0

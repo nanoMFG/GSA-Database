@@ -1,7 +1,7 @@
 import factory
 
-from grdb.database.v1_1_0.models import PreparationStep
-from grdb.database.v1_1_0.dal import dal
+from grdb.database.models import PreparationStep
+from .common import test_db
 
 LIST_SIZES = [1, 2, 3]
 
@@ -9,13 +9,10 @@ LIST_SIZES = [1, 2, 3]
 class PreparationStepFactory(factory.alchemy.SQLAlchemyModelFactory):
     class Meta:
         model = PreparationStep
-        sqlalchemy_session = dal.Session()
+        sqlalchemy_session = test_db.Session
         sqlalchemy_session_persistence = "commit"
 
-    recipe = factory.SubFactory(
-        "test.database.factories.RecipeFactory", preparation_steps=None
-    )
-
+    recipe_id = None
     step = factory.Iterator(LIST_SIZES)
     name = factory.Iterator(PreparationStep.name.info["choices"])
     duration = factory.Faker("pyfloat", positive=False, min_value=0.0, max_value=100.0)

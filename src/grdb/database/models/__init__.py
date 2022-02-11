@@ -11,5 +11,5 @@ from grdb.database.models.software import Software
 from grdb.database.models.raman_file import RamanFile
 from grdb.database.models.raman_analysis import RamanAnalysis
 from grdb.database.models.properties import Properties
-from grdb.database.models.user import User
-from grdb.database.models.institution import Institution
+# from grdb.database.models.user import User
+# from grdb.database.models.institution import Institution
