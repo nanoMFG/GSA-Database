@@ -1,15 +1,18 @@
 """Configuration module for pytest testing
 
-Includes common test fixtures used for testing of database models.
+Includes common test fixtures used for testing of database models_v_1_1_0.
    
 """
 import pytest
+"""UNCOMMECT TO TEST v.1_1_0
+# from grdb.database.v1_1_0 import dal, Base
+# from grdb.database.v1_1_0.models_v_1_1_0 import Recipe
+# from test.database.factories import RecipeFactory, PreparationStepFactory, AuthorFactory, PropertiesFactory, FurnaceFactory, EnvironmentConditionsFactory, ExperimentFactory, SoftwareFactory, SubstrateFactory
+"""
+from grdb.server.app import create_app
 
-from grdb.database.v1_1_0 import dal, Base
-from grdb.database.v1_1_0.models import Recipe
-from test.database.factories import RecipeFactory, PreparationStepFactory, AuthorFactory, PropertiesFactory, FurnaceFactory, EnvironmentConditionsFactory, ExperimentFactory, SoftwareFactory, SubstrateFactory
 
-#Make an option
+# Make an option
 
 def pytest_addoption(parser):
     """pytest command line option definition for "--persistdb"
@@ -30,6 +33,7 @@ def pytest_addoption(parser):
         help="dropdb: Teardown database when finished: True, False",
     )
 
+
 @pytest.fixture(scope="module")
 def persistdb(request):
     """fixture for adding the result of the "--persistdb" commandline option to a test when running pytest.
@@ -41,6 +45,7 @@ def persistdb(request):
         Result of getoption.
     """
     return request.config.getoption("--persistdb")
+
 
 @pytest.fixture(scope="module")
 def dropdb(request):
@@ -56,13 +61,14 @@ def dropdb(request):
     opt = request.config.getoption("--dropdb")
     ret = True
     if opt:
-        if opt=="False":
+        if opt == "False":
             ret = False
     else:
         ret = False
     return ret
 
-#Call is testdb fixture
+
+# Call is testdb fixture
 @pytest.fixture(scope="class")
 def recipe(persistdb, dropdb):
     """Set up a set of recipes for testing using the factory boy factories.
@@ -77,7 +83,7 @@ def recipe(persistdb, dropdb):
     """
     # create_all is already in test/database__init__.py.
     #  I don't know why I have to call it here again, but I do.
-    #Base.metadata.drop_all(bind=dal.engine)
+    # Base.metadata.drop_all(bind=dal.engine)
     Base.metadata.create_all(bind=dal.engine)
     print("Hey, here come some recipes...")
     # Set persistance for test data
@@ -94,8 +100,6 @@ def recipe(persistdb, dropdb):
         sess = dal.Session()
         sess.close()
         Base.metadata.drop_all(bind=dal.engine)
-
-
 
 
 # @pytest.fixture(scope="class")
@@ -158,6 +162,7 @@ def author(persistdb, dropdb):
         sess.close()
         Base.metadata.drop_all(bind=dal.engine)
 
+
 # @pytest.fixture(scope="class")
 # def software(persistdb, dropdb):
 #     SoftwareFactory._meta.sqlalchemy_session_persistence = persistdb
@@ -176,4 +181,10 @@ def author(persistdb, dropdb):
 #     if dropdb:
 #         sess = dal.Session()
 #         sess.close()
-#         Base.metadata.drop_all(bind=dal.engine)         
+#         Base.metadata.drop_all(bind=dal.engine)
+
+@pytest.fixture
+def client():
+    app = create_app()
+    with app.test_client() as client:
+        yield client
