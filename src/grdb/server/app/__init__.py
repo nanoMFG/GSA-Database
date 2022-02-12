@@ -22,8 +22,6 @@ admin_db = Database(Base)
 def register_blueprints(app):
     from .views import experiments
     app.register_blueprint(experiments)
-    from .views.auth import auth
-    app.register_blueprint(auth)
 
 
 def create_app():

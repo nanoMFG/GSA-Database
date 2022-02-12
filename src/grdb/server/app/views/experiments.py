@@ -5,7 +5,7 @@ from sqlalchemy import and_
 
 from grdb.database.models import (
     Furnace, Substrate, EnvironmentConditions, Recipe, PreparationStep, Experiment, Author, SemFile, SemAnalysis,
-    Software, RamanFile, RamanAnalysis, Properties, User
+    Software, RamanFile, RamanAnalysis, Properties
 )
 # from .utils import aws_s3
 from .. import read_db, write_db
