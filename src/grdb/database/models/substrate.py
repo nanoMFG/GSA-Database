@@ -11,6 +11,10 @@ from sqlalchemy.ext.hybrid import hybrid_property
 
 from grdb.database import Base
 
+#ExperimentToSubstrateAssociation = Table('EXP_TO_SUBSTRATE_ASSCTN', Base.metadata,
+#    Column('substrate_id', Integer, ForeignKey('substrate.id'))
+#)
+
 
 class Substrate(Base):
     """[summary]
@@ -21,6 +25,7 @@ class Substrate(Base):
     Returns:
         [type]: [description]
     """
+    __tablename__ = 'substrate'
 
     # Basic integer primary key
     id = Column(Integer, primary_key=True, info={"verbose_name": "ID"})

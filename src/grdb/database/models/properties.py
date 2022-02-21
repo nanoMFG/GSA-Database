@@ -15,6 +15,8 @@ class Properties(Base):
         [type]: [description]
     """
 
+    __tablename__ = 'properties'
+    
     id = Column(Integer, primary_key=True, info={"verbose_name": "ID"})
     experiment_id = Column(
         Integer,
