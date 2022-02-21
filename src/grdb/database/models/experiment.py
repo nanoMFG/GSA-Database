@@ -13,7 +13,6 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from grdb.database import Base
 from grdb.database.models.author import ExperimentToAuthorAssociation
 
-
 class Experiment(Base):
     """[summary]
     
@@ -23,7 +22,7 @@ class Experiment(Base):
     Returns:
         [type]: [description]
     """
-
+    __tablename__ = 'experiment'
     __table_args__ = {'extend_existing': True}
 
 
@@ -41,6 +40,7 @@ class Experiment(Base):
         info={"verbose_name": "Recipe ID"},
         index=True,
     )
+    # REMOVE NEXT FEW LINES - ENV CONDITIONS ARE ONE TO ONE NOT MANY TO ONE
     # The environment conditions can be the same for multiple different experiments
     environment_conditions_id = Column(
         Integer,
@@ -111,7 +111,7 @@ class Experiment(Base):
     # MANY-TO-ONE: experiments->furnace
     furnace = relationship("Furnace", back_populates="experiments")
 
-    # ONE-TO-ONE: sample -> properties
+    # ONE-TO-ONE: experiment -> properties
     properties = relationship(
         "Properties",
         uselist=False,
@@ -131,13 +131,14 @@ class Experiment(Base):
     )
 
     # raman_analysis = relationship(
-    #     "RamanSet",
+    #     "RamanAnalysis",
     #     uselist=False,
     #     cascade="all, delete-orphan",
     #     passive_deletes=True,
     #     back_populates="experiment",
     #     lazy="subquery",
     # )
+    
     # ONE-TO-MANY: experiment -> sem_files
     sem_files = relationship(
         "SemFile",

@@ -3,11 +3,13 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy import select, func, text, and_
 from sqlalchemy.sql import exists
+from sqlalchemy.schema import Table
 
 from grdb.database import Base, class_registry
 
 
 class Recipe(Base):
+    __tablename__ = 'recipe'
     # Basic integer primary key
     id = Column(Integer, primary_key=True, info={"verbose_name": "ID"})
 

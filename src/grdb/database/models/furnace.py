@@ -9,6 +9,10 @@ from sqlalchemy import Column, String, Integer, ForeignKey, Float
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.ext.hybrid import hybrid_property
 
+#ExperimentToFurnaceAssociation = Table('EXP_TO_FURNACE_ASSCTN', Base.metadata,
+#    Column('furnace_id', Integer, ForeignKey('furnace.id'))
+#)
+
 from grdb.database import Base
 
 class Furnace(Base):
@@ -21,11 +25,12 @@ class Furnace(Base):
         [type]: [description]
     """
 
+    __tablename__ = 'furnace'
     # Basic integer primary key
     id = Column(Integer, primary_key=True, info={"verbose_name": "ID"})
 
     # ONE-TO-MANY: furnace->experiment
-    experiments = relationship("Experiment", back_populates="furnace")
+    experiments = relationship("Experiment",  back_populates="furnace")
 
     tube_diameter = Column(
         Float,

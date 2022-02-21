@@ -23,17 +23,23 @@ class RamanAnalysis(Base):
     Returns:
         [type]: [description]
     """
+    __tablename__ = 'raman_analysis'
 
     id = Column(Integer, primary_key=True, info={"verbose_name": "ID"})
-    # set_id = Column(
-    #     Integer,
-    #     ForeignKey("raman_set.id"),
-    #     index=True,
-    #     info={"verbose_name": "Raman Set ID"},
-    # )
+
     raman_file_id = Column(
         Integer, ForeignKey("raman_file.id", ondelete="CASCADE"), index=True
     )
+    
+    raman_file = relationship(
+        "RamanFile",
+        uselist=False,
+        back_populates="raman_analyses",
+        # foreign_keys=[raman_file_id],
+        # primaryjoin="RamanAnalysis.raman_file_id==RamanFile.id",
+        lazy="subquery",
+    )
+    
     software_name = Column(String(20), info={"verbose_name": "Analysis Software"})
     software_version = Column(String(20), info={"verbose_name": "Software Version"})
     __table_args__ = (
@@ -43,7 +49,6 @@ class RamanAnalysis(Base):
             name="fk_raman_analysis_software",
         ),
     )
-
     xcoord = Column(Integer, info={"verbose_name": "X Coordinate"})
     ycoord = Column(Integer, info={"verbose_name": "Y Coordinate"})
     percent = Column(
@@ -55,6 +60,8 @@ class RamanAnalysis(Base):
             "required": True,
         },
     )
+    d_to_g = Column(Float, info={"verbose_name": "Weighted D/G", "required": False})
+    gp_to_g = Column(Float, info={"verbose_name": "Weighted G'/G", "required": False})
     d_peak_shift = Column(
         Float,
         info={"verbose_name": "D Peak Shift", "std_unit": "cm^-1", "required": False},
@@ -86,13 +93,6 @@ class RamanAnalysis(Base):
         Float, info={"verbose_name": "G' FWHM", "std_unit": "cm^-1", "required": False}
     )
 
-    raman_file = relationship(
-        "RamanFile",
-        uselist=False,
-        back_populates="raman_analysis",
-        primaryjoin="RamanAnalysis.raman_file_id==RamanFile.id",
-        lazy="subquery",
-    )
 
     # raman_set = relationship(
     #     "RamanSet",

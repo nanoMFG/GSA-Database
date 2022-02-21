@@ -17,6 +17,9 @@ class SemFile(Base):
     Args:
         Base ([type]): [description]
     """
+
+    __tablename__ = 'sem_file'
+
     # Auto incremented integer primary key
     id = Column(
         Integer,
@@ -57,10 +60,10 @@ class SemFile(Base):
     )
     __mapper_args__ = {"confirm_deleted_rows": False}
 
-    analyses = relationship(
+    sem_analyses = relationship(
         "SemAnalysis",
         cascade="all, delete-orphan",
-        primaryjoin="SemFile.id==SemAnalysis.sem_file_id",
+        # primaryjoin="SemFile.id==SemAnalysis.sem_file_id",
         passive_deletes=True,
         single_parent=True,
         foreign_keys="SemAnalysis.sem_file_id",

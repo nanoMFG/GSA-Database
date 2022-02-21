@@ -15,6 +15,7 @@ class PreparationStep(Base):
         [type]: [description]
     """
 
+    __tablename__ = 'preparation_step'
     # Basic integer primary key
     id = Column(Integer, primary_key=True, info={"verbose_name": "ID"})
 

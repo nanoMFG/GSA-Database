@@ -22,6 +22,7 @@ class SemAnalysis(Base):
     Returns:
         [type]: [description]
     """
+    __tablename__ = 'sem_analysis'
 
     id = Column(Integer, primary_key=True, info={"verbose_name": "ID"})
     sem_file_id = Column(
@@ -41,7 +42,7 @@ class SemAnalysis(Base):
     __mapper_args__ = {"confirm_deleted_rows": False}
     sem_file = relationship(
         "SemFile",
-        back_populates="analyses",
+        back_populates="sem_analyses",
         foreign_keys=[sem_file_id],
         lazy="subquery",
     )

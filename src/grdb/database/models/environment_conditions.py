@@ -14,6 +14,7 @@ class EnvironmentConditions(Base):
         [type]: [description]
     """
 
+    __tablename__ = "environment_conditions"
     # Basic integer primary key
     id = Column(Integer, primary_key=True, info={"verbose_name": "ID"})
 
