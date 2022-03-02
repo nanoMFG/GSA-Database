@@ -33,6 +33,9 @@ def create_app():
     read_db.init(app.config["DEV_DATABASE_URL_READ"])
     write_db.init(app.config["DEV_DATABASE_URL_WRITE"])
     admin_db.init(app.config["DEV_DATABASE_URL_ADMIN"])
+    # read_db.init(app.config["TEST_DATABASE_URL_READ"])
+    # write_db.init(app.config["TEST_DATABASE_URL_WRITE"])
+    # admin_db.init(app.config["TEST_DATABASE_URL_ADMIN"])
 
     register_blueprints(app)
     return app

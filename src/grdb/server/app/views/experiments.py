@@ -42,7 +42,7 @@ def tool_init():
     authors_json = [a.json_encodable() for a in authors]
     db.close()
     return {
-        'environmental_conditions': env_conditions_json,
+        'environment_conditions': env_conditions_json,
         'furnaces': furnaces_json,
         'properties': properties_json,
         'recipes': recipes_json,
@@ -56,9 +56,9 @@ def submit_experiment():
     db = write_db.Session()
     body = request.get_json()
     try:
-        if body.get('useCustomEnvironmentalConditions'):
-            ambient_temperature = body.get('useCustomEnvironmentalConditions') \
-                if body.get('useCustomEnvironmentalConditions') else None
+        if body.get('useCustomEnvironmentConditions'):
+            ambient_temperature = body.get('useCustomEnvironmentConditions') \
+                if body.get('useCustomEnvironmentConditions') else None
             dew_point = body.get('ambientTemperature') if body.get('ambientTemperature') else None
             env_con = EnvironmentConditions(dew_point=dew_point,
                                             ambient_temperature=ambient_temperature)
@@ -66,7 +66,7 @@ def submit_experiment():
             db.flush()
             environment_conditions_id = env_con.id
         else:
-            environment_conditions_id = body.get('environmentalConditionsNumber')
+            environment_conditions_id = body.get('environmentConditionsNumber')
 
         if body.get('useCustomFurnace'):
             tube_diameter = body.get('tubeDiameter') if body.get('tubeDiameter') else None
@@ -189,6 +189,8 @@ def get_experiment(experiment_id):
     experiment_json = experiment.json_encodable()
 
     raman_files = db.query(RamanFile).filter_by(experiment_id=experiment.id).all()
+    # raman_files = []
+
     raman_files_json = []
     for raman_file in raman_files:
         raman_files_json.append(raman_file.read_file())
@@ -270,7 +272,6 @@ def query_experiments():
     '''    QUERYING PROPERTY FILTERS    '''
     if property_filters:
         query = db.query(Experiment.id).join(Properties)
-        exp_ids_satisfying_property_filters = set()
         for property_filter in property_filters:
             filter_name = property_filter['name']
             if filter_name == 'Shape':
@@ -296,11 +297,10 @@ def query_experiments():
                     .filter(and_(Properties.domain_size >= property_filter['min'],
                                  Properties.domain_size <= property_filter['max']))
 
-            result_ids = extract_first_elem(result)
-            exp_ids_satisfying_property_filters.union(result_ids)
+        exp_ids_satisfying_property_filters = extract_first_elem(query.all())
         exp_ids.intersection_update(exp_ids_satisfying_property_filters)
 
     db.close()
-    res = db.query(Experiment).filter_by(id=exp_ids).all()
+    res = db.query(Experiment).filter(Experiment.id.in_(exp_ids)).all()
     res = [r.json_encodable() for r in res]
     return jsonify(res)

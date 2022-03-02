@@ -193,6 +193,6 @@ class Experiment(Base):
             "properties": self.properties.json_encodable() if self.properties else None,
             "furnace": self.furnace.json_encodable() if self.furnace else None,
             "substrate": self.substrate.json_encodable() if self.substrate else None,
-            "environmental_conditions": self.environment_conditions.json_encodable() if self.environment_conditions else None,
+            "environment_conditions": self.environment_conditions.json_encodable() if self.environment_conditions else None,
             "validated": self.validated
         }
