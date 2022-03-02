@@ -269,6 +269,35 @@ def query_experiments():
         exp_ids_satisfying_furnace_filters = extract_first_elem(query.all())
         exp_ids.intersection_update(exp_ids_satisfying_furnace_filters)
 
+    '''    QUERYING SUBSTRATE FILTERS  '''
+    if substrate_filters:
+        query = db.query(Experiment.id).join(Substrate)
+        for substrate_filter in substrate_filters:
+            filter_name = substrate_filter['name']
+            if 'Catalyst' in filter_name:
+                query = query \
+                    .filter(Substrate.catalyst == substrate_filter['value'])
+            elif 'Thickness' in filter_name:
+                query = query \
+                    .filter(and_(Substrate.thickness >= furnace_filter['min'],
+                                 Substrate.thickness <= furnace_filter['max']))
+            elif 'Diameter' in filter_name:
+                query = query \
+                    .filter(and_(Substrate.diameter >= furnace_filter['min'],
+                                 Substrate.diameter <= furnace_filter['max']))
+            elif 'Length' in filter_name:
+                query = query \
+                    .filter(and_(Substrate.length >= furnace_filter['min'],
+                                 Substrate.length <= furnace_filter['max']))
+            elif 'Surface Area' in filter_name:
+                query = query \
+                    .filter(and_(Substrate.surface_area >= furnace_filter['min'],
+                                 Substrate.surface_area <= furnace_filter['max']))
+            else:
+                pass
+        exp_ids_satisfying_furnace_filters = extract_first_elem(query.all())
+        exp_ids.intersection_update(exp_ids_satisfying_furnace_filters)
+
     '''    QUERYING PROPERTY FILTERS    '''
     if property_filters:
         query = db.query(Experiment.id).join(Properties)
