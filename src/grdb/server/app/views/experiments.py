@@ -229,7 +229,7 @@ def query_experiments():
         # elif category == 'recipe': TODO: how to filter recipe?
         #     recipe_filters.append(filt)
         elif category == 'substrate':
-            property_filters.append(filt)
+            substrate_filters.append(filt)
 
     def extract_first_elem(x):
         return list(map(lambda x: x[0], x))
