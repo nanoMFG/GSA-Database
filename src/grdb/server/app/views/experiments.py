@@ -295,8 +295,8 @@ def query_experiments():
                                  Substrate.surface_area <= furnace_filter['max']))
             else:
                 pass
-        exp_ids_satisfying_furnace_filters = extract_first_elem(query.all())
-        exp_ids.intersection_update(exp_ids_satisfying_furnace_filters)
+        exp_ids_satisfying_substrate_filters = extract_first_elem(query.all())
+        exp_ids.intersection_update(exp_ids_satisfying_substrate_filters)
 
     '''    QUERYING PROPERTY FILTERS    '''
     if property_filters:
