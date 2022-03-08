@@ -133,3 +133,27 @@ class PreparationStep(Base):
             "required": False,
         },
     )
+
+    def json_encodable(self):
+        params = [
+            "step",
+            "name",
+            "duration",
+            "furnace_temperature",
+            "furnace_pressure",
+            "sample_location",
+            "helium_flow_rate",
+            "hydrogen_flow_rate",
+            "carbon_source_flow_rate",
+            "argon_flow_rate",
+            "cooling_rate",
+        ]
+        json_dict = {'id': self.id,
+                     'recipe_id':self.recipe_id}
+        for p in params:
+            info = getattr(PreparationStep, p).info
+            json_dict[p] = {
+                "value": getattr(self, p),
+                "unit": info["std_unit"] if "std_unit" in info else None,
+            }
+        return json_dict

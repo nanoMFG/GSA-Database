@@ -81,3 +81,20 @@ class Substrate(Base):
             "tooltip": "Surface area of the substrate",
         },
     )
+
+    def json_encodable(self):
+        params = [
+            "catalyst",
+            "thickness",
+            "diameter",
+            "length",
+            "surface_area",
+        ]
+        json_dict = {'id': self.id}
+        for p in params:
+            info = getattr(Substrate, p).info
+            json_dict[p] = {
+                "value": getattr(self, p),
+                "unit": info["std_unit"] if "std_unit" in info else None,
+            }
+        return json_dict

@@ -15,6 +15,7 @@ from sqlalchemy.ext.hybrid import hybrid_property
 
 from grdb.database import Base
 
+
 class Furnace(Base):
     """[summary]
     
@@ -71,4 +72,20 @@ class Furnace(Base):
             "tooltip": "Length of the heated region of the tube",
         },
     )
-    
+
+    def json_encodable(self):
+        params = [
+            "tube_diameter",
+            "cross_sectional_area",
+            "tube_length",
+            "cross_sectional_area",
+            "length_of_heated_region",
+        ]
+        json_dict = {'id': self.id}
+        for p in params:
+            info = getattr(Furnace, p).info
+            json_dict[p] = {
+                "value": getattr(self, p),
+                "unit": info["std_unit"] if "std_unit" in info else None,
+            }
+        return json_dict
