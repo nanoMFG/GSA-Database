@@ -68,7 +68,7 @@ class Experiment(Base):
     #software_version = Column(String(20), info={"verbose_name": "Software Version"})
 
     # The primary SEM file associated with this experiment
-    primary_sem_file_id = Column(Integer, index=True)
+    primary_sem_file_id = Column(Integer, info={"verbose_name": "SEM File ID"}, index=True)
 
     # The user/author that submitted this experiment
     submitted_by = Column(Integer, ForeignKey('author.id'), info={"verbose_name": "Submitted By"})
