@@ -23,7 +23,6 @@ factory-boy==3.2.1
 Faker==12.0.0
 Flask==2.0.2
 Flask-Cors==3.0.10
--e git+ssh://git@github.com/nanoMFG/GSA-Database.git@434f662ca1c49e707ab8b149d2abb6b7b3c0372a#egg=grdb
 gunicorn==20.1.0
 idna==3.3
 iniconfig==1.1.1
