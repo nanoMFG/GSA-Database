@@ -29,7 +29,7 @@ class RamanFile(Base):
     # url endpoint for retriving file - should rename to "box_url"?
     url = Column(String(256))
 
-    filename_in_s3 = Column(String(256))
+    s3_object_name = Column(String(256))
 
     #
     wavelength = Column(

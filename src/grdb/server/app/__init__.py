@@ -20,8 +20,9 @@ admin_db = Database(Base)
 
 
 def register_blueprints(app):
-    from .views import experiments
+    from .views import experiments, authors
     app.register_blueprint(experiments)
+    app.register_blueprint(authors)
 
 
 def create_app():
