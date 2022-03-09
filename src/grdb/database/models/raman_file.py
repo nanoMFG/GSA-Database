@@ -29,6 +29,8 @@ class RamanFile(Base):
     # url endpoint for retriving file - should rename to "box_url"?
     url = Column(String(256))
 
+    filename_in_s3 = Column(String(256))
+
     #
     wavelength = Column(
         Float,
@@ -44,7 +46,7 @@ class RamanFile(Base):
     experiment = relationship("Experiment", back_populates="raman_files")
 
     # ONE->MANY: raman_file->raman_analysis
-    raman_analyses = relationship(
+    raman_analysis = relationship(
         "RamanAnalysis",
         uselist=False,
         cascade="all, delete-orphan",
