@@ -15,11 +15,12 @@ Conventions:
     
 
 """
+"""UNCOMMECT TO TEST v.1_1_0
 import pytest
 from math import isclose
 
 from grdb.database.v1_1_0 import dal, Base
-from grdb.database.v1_1_0.models import EnvironmentConditions
+from grdb.database.v1_1_0.models_v_1_1_0 import EnvironmentConditions
 from test.database.factories import EnvironmentConditionsFactory
 
 RTOL = 1e-3
@@ -34,3 +35,4 @@ class TestEnvironmentConditionsQueries:
     def test_simple(self, environment_conditions):
         for row in environment_conditions:
             print(f"id: {row.ambient_temperature}")
+"""

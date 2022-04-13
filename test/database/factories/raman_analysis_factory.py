@@ -1,21 +1,19 @@
 import factory
 import random
 
-from grdb.database.v1_1_0.models import RamanSpectrum
-from grdb.database.v1_1_0.dal import dal
+from grdb.database.models import RamanAnalysis
+from .common import test_db
 
 LIST_SIZES = [1, 2, 3, 4, 5, 6]
 
 
-class RamanSpectrumFactory(factory.alchemy.SQLAlchemyModelFactory):
+class RamanAnalysisFactory(factory.alchemy.SQLAlchemyModelFactory):
     class Meta:
-        model = RamanSpectrum
-        sqlalchemy_session = dal.Session()
-        sqlalchemy_session_persistence = "commit"
+        model = RamanAnalysis
+        sqlalchemy_session = test_db.Session
+        sqlalchemy_session_persistence = "flush"
 
-    raman_file = factory.SubFactory(
-        "test.database.factories.RamanFileFactory", raman_spectrum=None
-    )
+    raman_file_id = None
     # raman_set = factory.RelatedFactory(
     #     "test.database.factories.RamanSetFactory",
     #     "raman_spectra"

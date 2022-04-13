@@ -1,7 +1,7 @@
 import factory
 
-from grdb.database.v1_1_0.models import SemAnalysis
-from grdb.database.v1_1_0.dal import dal
+from grdb.database.models import SemAnalysis
+from .common import test_db
 
 LIST_SIZES = [1, 2, 3]
 
@@ -9,16 +9,13 @@ LIST_SIZES = [1, 2, 3]
 class SemAnalysisFactory(factory.alchemy.SQLAlchemyModelFactory):
     class Meta:
         model = SemAnalysis
-        sqlalchemy_session = dal.Session()
-        sqlalchemy_session_persistence = "commit"
+        sqlalchemy_session = test_db.Session
+        sqlalchemy_session_persistence = "flush"
 
-    sem_file = factory.SubFactory(
-        "test.database.factories.SemFileFactory", analyses=None
-    )
+    # sem_file = factory.SubFactory(
+    #     "database.factories.SemFileFactory", analyses=None
+    # )
 
-    mask_url = factory.Faker("url")
-    px_per_um = factory.Faker("pyint", min_value=0, max_value=30, step=1)
-    growth_coverage = factory.Faker(
-        "pyfloat", positive=False, min_value=0.0, max_value=99.0
-    )
-    automated = factory.Faker("boolean", chance_of_getting_true=50)
+    # sem_file_id = factory.Faker('pyint',max_value=100)
+    software_name = 'fake_sw'
+    software_version = '1.1.0'

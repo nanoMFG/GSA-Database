@@ -4,7 +4,7 @@ from .author_factory import AuthorFactory
 from .environment_conditions_factory import EnvironmentConditionsFactory
 from .properties_factory import PropertiesFactory
 from .raman_file_factory import RamanFileFactory
-from .raman_spectrum_factory import RamanSpectrumFactory
+from .raman_analysis_factory import RamanAnalysisFactory
 from .sem_analysis_factory import SemAnalysisFactory
 from .sem_file_factory import SemFileFactory
 from .software_factory import SoftwareFactory

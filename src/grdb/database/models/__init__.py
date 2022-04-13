@@ -11,6 +11,7 @@ from grdb.database.models.software import Software
 from grdb.database.models.raman_file import RamanFile
 from grdb.database.models.raman_analysis import RamanAnalysis
 from grdb.database.models.properties import Properties
+<<<<<<< HEAD
 
 Recipe.maximum_temperature.info["verbose_name"] = "Maximum Temperature"
 Recipe.maximum_temperature.info["std_unit"] = "C"
@@ -35,3 +36,7 @@ Recipe.uses_hydrogen.info["std_unit"] = None
 
 Author.full_name_and_institution.info["verbose_name"] = "Author"
 Author.full_name_and_institution.info["std_unit"] = None
+=======
+# from grdb.database.models.user import User
+# from grdb.database.models.institution import Institution
+>>>>>>> 66ffa44fb0540fb2a9de62147829e9d22221d52a

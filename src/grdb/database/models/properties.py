@@ -42,7 +42,8 @@ class Properties(Base):
         },
     )
     number_of_layers = Column(
-        Integer, info={"verbose_name": "Number of Layers", "required": False, "tooltip": "Number of layers of graphene present on the catalyst"}
+        Integer, info={"verbose_name": "Number of Layers", "required": False,
+                       "tooltip": "Number of layers of graphene present on the catalyst"}
     )
     growth_coverage = Column(
         Float,
@@ -85,7 +86,8 @@ class Properties(Base):
             "domain_size",
             "shape",
         ]
-        json_dict = {}
+        json_dict = {'id': self.id,
+                     'experiement_id': self.experiment_id}
         for p in params:
             info = getattr(Properties, p).info
             json_dict[p] = {

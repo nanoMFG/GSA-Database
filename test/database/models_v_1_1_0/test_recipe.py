@@ -15,11 +15,12 @@ Conventions:
     
 
 """
+'''UNCOMMECT TO TEST v.1_1_0
 import pytest
 from math import isclose
 
 from grdb.database.v1_1_0 import dal, Base
-from grdb.database.v1_1_0.models import Recipe
+from grdb.database.v1_1_0.models_v_1_1_0 import Recipe
 from test.database.factories import RecipeFactory, PreparationStepFactory
 
 RTOL = 1e-3
@@ -207,3 +208,4 @@ class TestRecipeQueries:
 
     #def test__json_encodable(self, recipe):
     #    assert False
+'''
