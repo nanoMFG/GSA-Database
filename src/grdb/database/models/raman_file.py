@@ -41,17 +41,19 @@ class RamanFile(Base):
     )
 
     # MANY->ONE: raman_files->experiment
-    experiment = relationship("Experiment", back_populates="raman_files")
+    experiment = relationship("Experiment", foreign_keys=experiment_id, back_populates="raman_files")
 
     # ONE->MANY: raman_file->raman_analysis
     raman_analyses = relationship(
         "RamanAnalysis",
         #uselist=False,
+
         cascade="all, delete-orphan",
         # foreign_keys="RamanAnalysis.raman_file_id",
         passive_deletes=True,
         back_populates="raman_file",
     )
+
 
     def __repr__(self):
         return self._repr(
