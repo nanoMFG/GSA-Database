@@ -92,6 +92,15 @@ class RamanAnalysis(Base):
     )
 
 
+    raman_file = relationship(
+        "RamanFile",
+        #uselist=False,
+        back_populates="raman_analyses",
+        primaryjoin="RamanAnalysis.raman_file_id==RamanFile.id",
+        lazy="subquery",
+    )
+
+
     # raman_set = relationship(
     #     "RamanSet",
     #     back_populates="raman_spectra",
