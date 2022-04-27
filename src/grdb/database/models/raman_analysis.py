@@ -49,8 +49,6 @@ class RamanAnalysis(Base):
             name="fk_raman_analysis_software",
         ),
     )
-    xcoord = Column(Integer, info={"verbose_name": "X Coordinate"})
-    ycoord = Column(Integer, info={"verbose_name": "Y Coordinate"})
     percent = Column(
         Float,
         info={
