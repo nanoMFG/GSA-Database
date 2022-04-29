@@ -12,7 +12,7 @@ class PreparationStepFactory(factory.alchemy.SQLAlchemyModelFactory):
         sqlalchemy_session = test_db.Session
         sqlalchemy_session_persistence = "commit"
 
-    recipe_id = None
+    #recipe_id = None
     step = factory.Iterator(LIST_SIZES)
     name = factory.Iterator(PreparationStep.name.info["choices"])
     duration = factory.Faker("pyfloat", positive=False, min_value=0.0, max_value=100.0)

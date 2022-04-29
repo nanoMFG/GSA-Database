@@ -13,7 +13,7 @@ class SemFileFactory(factory.alchemy.SQLAlchemyModelFactory):
         sqlalchemy_session_persistence = "flush"
 
     # experiment_id = factory.Sequence(lambda n:n)
-    experiment_id = None
+    #experiment_id = None
     filename = factory.Faker("file_name", extension="tif")
     url = factory.Faker("url")
-    default_analysis_id = None
+    #default_analysis_id = None

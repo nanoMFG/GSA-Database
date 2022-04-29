@@ -117,7 +117,7 @@ class Experiment(Base):
         cascade="all, delete-orphan",
         passive_deletes=True,
         back_populates="experiment",
-        lazy="subquery",
+        #lazy="subquery",
     )
 
     # ONE-TO-MANY: experiment -> raman_files

@@ -28,8 +28,7 @@ class PreparationStep(Base):
     )
 
     # MANY-TO-ONE: preparation_steps->recipe
-    #recipe = relationship("Recipe", uselist=False, back_populates="preparation_steps")
-    recipe = relationship("Recipe", uselist=True, back_populates="preparation_steps")
+    recipe = relationship("Recipe", back_populates="preparation_steps")
 
     step = Column(Integer) # Should this be renamed to "step_number"?
     name = Column(
