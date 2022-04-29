@@ -13,13 +13,13 @@ class RamanAnalysisFactory(factory.alchemy.SQLAlchemyModelFactory):
         sqlalchemy_session = test_db.Session
         sqlalchemy_session_persistence = "flush"
 
-    raman_file_id = None
+    # raman_file_id = None
     # raman_set = factory.RelatedFactory(
     #     "test.database.factories.RamanSetFactory",
     #     "raman_spectra"
     #     )
-    xcoord = factory.Faker("pyint", min_value=0, max_value=100)
-    ycoord = factory.Faker("pyint", min_value=0, max_value=100)
+    # xcoord = factory.Faker("pyint", min_value=0, max_value=100)
+    # ycoord = factory.Faker("pyint", min_value=0, max_value=100)
     percent = factory.Faker("pyfloat", positive=False, min_value=0.0, max_value=100.0)
     d_peak_shift = factory.Faker(
         "pyfloat", positive=False, min_value=0.0, max_value=100.0
