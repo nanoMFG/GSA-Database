@@ -40,7 +40,7 @@ class DataAccessLayer:
             )
         Base.metadata.create_all(bind=self.engine)
         self.Session = scoped_session(
-            sessionmaker(autocommit=False, autoflush=True, bind=self.engine)
+            sessionmaker(autocommit=False, autoflush=True, bind=self.engine, expire_on_commit=True)
         )
         Base.query = self.Session.query_property()
 
@@ -66,7 +66,8 @@ class DataAccessLayer:
             print('Session rolled back')
             raise
         finally:
-            session.close()
+            self.Session.remove()
+            #session.close()
             print('Session closed')
 
 
