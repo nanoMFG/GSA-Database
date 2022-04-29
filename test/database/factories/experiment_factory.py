@@ -18,7 +18,7 @@ class ExperimentFactory(factory.alchemy.SQLAlchemyModelFactory):
     environment_conditions_id = factory.Faker('pyint')
     #substrate_id = factory.Faker('pyint')
     #furnace_id = factory.Faker('pyint')
-    primary_sem_file_id = None
+    #primary_sem_file_id = None
     # The user/author that submitted this experiment
     #submitted_by = factory.LazyAttribute(lambda obj: AuthorFactory().id)
     # The date the experiment was conducted

@@ -12,10 +12,14 @@ class RamanFileFactory(factory.alchemy.SQLAlchemyModelFactory):
         sqlalchemy_session = test_db.Session
         sqlalchemy_session_persistence = "flush"
 
-    experiment = factory.SubFactory(
-        "database.factories.ExperimentFactory", raman_files=None
-    )
+    # experiment = factory.SubFactory(
+    #     "database.factories.ExperimentFactory", raman_files=None
+    # )
 
     filename = factory.Faker("file_name", extension="tif")
     url = factory.Faker("url")
     wavelength = factory.Faker("pyfloat", positive=False, min_value=0.0, max_value=800.0)
+
+    raman_analyses = factory.RelatedFactoryList(
+        "test.database.factories.RamanAnalysisFactory", "raman_file", size=3
+    )
