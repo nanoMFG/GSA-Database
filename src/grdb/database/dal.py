@@ -54,21 +54,21 @@ class DataAccessLayer:
         print('session is ', session )
         if self.privileges["write"] == False:
             session.flush = self.abort_ro
-            print('Session flushed')
+            #print('Session flushed')
         try:
             yield session
-            print('Session yielded')
+            #print('Session yielded')
             if autocommit:
                 session.commit()
-                print('Session committed')
+                #print('Session committed')
         except BaseException:
             session.rollback()
-            print('Session rolled back')
+            #print('Session rolled back')
             raise
         finally:
             self.Session.remove()
             #session.close()
-            print('Session closed')
+            #print('Session closed')
 
 
 dal = DataAccessLayer()
