@@ -23,9 +23,17 @@ To deploy the app, make sure you have pasted ```.env```file as ```src/grdb/serve
 Next, ```cd``` into ```src``` and run ```docker-compose up --build``` in terminal.
 
 ## Steps to debug locally
-1. Paste the ```.env``` file as ```src/grdb/server/.env```
-2. Run ```src/app.py``` (```host=127.0.0.1``` to run in local machine, ```host=0.0.0.0``` for docker container) 
 
+Step 1-3 is optional when Conda environment is used.
+
+1. Create a python virtual environment. Run ```python3 -m venv venv```
+2. Activate the virtual environment. Run ```source venv/bin/activate```
+3. Download dependency libraries Run ```pip3 install -r src/requirements.txt```
+4. Paste the ```.env``` file as ```src/grdb/server/.env```
+5. Run ```src/app.py```
+   - ```host=127.0.0.1``` to run in local machine, ```host=0.0.0.0``` for docker container 
+   - default port is `5000` 
+    
 ## File Structure
 
 ```src/grdb/database``` stores Model files for SQLAlchemy.
