@@ -22,6 +22,9 @@ To deploy the app, make sure you have pasted ```.env```file as ```src/grdb/serve
 
 Next, ```cd``` into ```src``` and run ```docker-compose up --build``` in terminal.
 
+## Steps to debug locally
+1. Paste the ```.env``` file as ```src/grdb/server/.env```
+2. Run ```src/app.py``` (```host=127.0.0.1``` to run in local machine, ```host=0.0.0.0``` for docker container) 
 
 ## File Structure
 
