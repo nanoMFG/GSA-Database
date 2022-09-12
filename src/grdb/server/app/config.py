@@ -10,8 +10,10 @@ class Config:
     Config class that will be used for flask app config.
     Store .env file in "src/grdb/server" folder
     """
-    DB_HOST = environ.get('DB_HOST')
+    HOST = environ.get('HOST')
+    PORT = environ.get('PORT')
 
+    DB_HOST = environ.get('DB_HOST')
     DEV_URL = environ.get('DEV_URL')
     DEV_ADMIN_USER = environ.get('DEV_ADMIN_USER')
     DEV_ADMIN_PASS = environ.get('DEV_ADMIN_PASS')
