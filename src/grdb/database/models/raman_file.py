@@ -46,10 +46,9 @@ class RamanFile(Base):
     experiment = relationship("Experiment", foreign_keys=experiment_id, back_populates="raman_files")
 
     # ONE->MANY: raman_file->raman_analysis
-    raman_analysis = relationship(
+    raman_analyses = relationship(
         "RamanAnalysis",
         #uselist=False,
-
         cascade="all, delete-orphan",
         # foreign_keys="RamanAnalysis.raman_file_id",
         passive_deletes=True,
