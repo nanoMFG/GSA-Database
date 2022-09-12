@@ -21,11 +21,9 @@ class Recipe(Base):
         back_populates="recipe",
     )
 
-    # ONE-TO-MANY: recipe -> sample
+    # ONE-TO-MANY: recipe -> experiment
     experiments = relationship(
         "Experiment",
-        cascade="all, delete-orphan",
-        passive_deletes=True,
         back_populates="recipe",
     )
 

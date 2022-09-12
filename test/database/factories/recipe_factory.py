@@ -18,6 +18,6 @@ class RecipeFactory(factory.alchemy.SQLAlchemyModelFactory):
         "pyfloat", positive=True, min_value=80.0, max_value=100.0
     )
 
-    # preparation_steps = factory.RelatedFactoryList(
-    #     'database.factories.PreparationStepFactory', 'recipe_id', size=3
-    # )
+    preparation_steps = factory.RelatedFactoryList(
+        'test.database.factories.PreparationStepFactory', 'recipe', size=3
+    )

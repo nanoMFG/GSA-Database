@@ -10,9 +10,9 @@ from grdb.database import Base
 
 # Uncomment to hav all SQL dumped to the console.
 
-#import logging
-#logging.basicConfig()
-#logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
+# import logging
+# logging.basicConfig()
+# logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
 
 class DataAccessLayer:
@@ -40,10 +40,9 @@ class DataAccessLayer:
             )
         Base.metadata.create_all(bind=self.engine)
         self.Session = scoped_session(
-            sessionmaker(autocommit=False, autoflush=True, bind=self.engine)
+            sessionmaker(autocommit=False, autoflush=True, bind=self.engine, expire_on_commit=True)
         )
         Base.query = self.Session.query_property()
-        
 
     def abort_ro(self, *args, **kwargs):
         return
@@ -52,17 +51,24 @@ class DataAccessLayer:
     def session_scope(self, autocommit=False):
         """Provide a transactional scope around a series of operations."""
         session = self.Session()
+        print('session is ', session )
         if self.privileges["write"] == False:
             session.flush = self.abort_ro
+            #print('Session flushed')
         try:
             yield session
+            #print('Session yielded')
             if autocommit:
                 session.commit()
+                #print('Session committed')
         except BaseException:
             session.rollback()
+            #print('Session rolled back')
             raise
         finally:
-            session.close()
+            self.Session.remove()
+            #session.close()
+            #print('Session closed')
 
 
 dal = DataAccessLayer()

@@ -9,6 +9,11 @@ import pytest
 # from grdb.database.v1_1_0.models_v_1_1_0 import Recipe
 # from test.database.factories import RecipeFactory, PreparationStepFactory, AuthorFactory, PropertiesFactory, FurnaceFactory, EnvironmentConditionsFactory, ExperimentFactory, SoftwareFactory, SubstrateFactory
 """
+from grdb.database import dal, Base
+from grdb.database.models import Recipe
+from test.database.factories.common import dbSpec
+from test.database.factories import RecipeFactory, PreparationStepFactory, AuthorFactory, PropertiesFactory, FurnaceFactory, EnvironmentConditionsFactory, ExperimentFactory, SoftwareFactory, SubstrateFactory
+
 from grdb.server.app import create_app
 
 
@@ -34,7 +39,7 @@ def pytest_addoption(parser):
     )
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="session")
 def persistdb(request):
     """fixture for adding the result of the "--persistdb" commandline option to a test when running pytest.
 
@@ -47,7 +52,7 @@ def persistdb(request):
     return request.config.getoption("--persistdb")
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="session")
 def dropdb(request):
     """fixture for adding the result of the "--dropdb" commandline option to a test
     when running pytest.
@@ -66,11 +71,18 @@ def dropdb(request):
     else:
         ret = False
     return ret
-
+# dbSpec = {
+#     "nSubstrates": 4,
+#     "nAuthors": 12,
+#     "nRecipes": 8,
+#     "nExperiments": 10,
+#     "listAuthorsPerExperiment": [1, 2, 1, 5, 1, 1, 3, 1, 1, 12],
+#     "listRecipesPerExperiment": [1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
+# }
 
 # Call is testdb fixture
-@pytest.fixture(scope="class")
-def recipe(persistdb, dropdb):
+@pytest.fixture(scope="session")
+def grdb(persistdb, dropdb):
     """Set up a set of recipes for testing using the factory boy factories.
 
     Yield the generates recipes and teardown afterwords.
@@ -85,22 +97,56 @@ def recipe(persistdb, dropdb):
     #  I don't know why I have to call it here again, but I do.
     # Base.metadata.drop_all(bind=dal.engine)
     Base.metadata.create_all(bind=dal.engine)
-    print("Hey, here come some recipes...")
-    # Set persistance for test data
-    ExperimentFactory._meta.sqlalchemy_session_persistence = persistdb
-    experiments = ExperimentFactory.create_batch(10)
+    SubstrateFactory._meta.sqlalchemy_session_persistence = persistdb
+    AuthorFactory._meta.sqlalchemy_session_persistence = persistdb
     RecipeFactory._meta.sqlalchemy_session_persistence = persistdb
-    PreparationStepFactory._meta.sqlalchemy_session_persistence = persistdb
-    preparation_steps = PreparationStepFactory.create_batch(30)
-    # Add a batch of recipes
-    recipes = RecipeFactory.create_batch(5)
-    yield recipes
+    ExperimentFactory._meta.sqlalchemy_session_persistence = persistdb
+
+    print("\n\nHere come some experiments!!\n")
+
+    print("Creating substrates...")
+    substrates = SubstrateFactory.create_batch(dbSpec["nSubstrates"])
+    print("Creating authors...")
+    authors = AuthorFactory.create_batch(dbSpec["nAuthors"])
+    print("Creating recipes...")
+    recipes = RecipeFactory.create_batch(dbSpec["nRecipes"])
+    print("Creating furnaces...")
+    furnaces = FurnaceFactory.create_batch(dbSpec["nFurnaces"])
+
+    print("Creating experiments...")
+    for n in range(dbSpec["nExperiments"]):
+        recipeIdx = n%dbSpec['nRecipes']
+        substrateIdx = n%dbSpec['nSubstrates']
+        furnaceIdx = dbSpec["listFurnacesPerExperiment"][n] - 1
+        #print(f"{n+1} Recipe num: {recipes[recipeIdx].id} Furnace num: {furnaces[furnaceIdx].id}")
+        experiments = ExperimentFactory.create(
+            authors=authors[:dbSpec["listAuthorsPerExperiment"][n]],
+            recipe=[recipes[recipeIdx]],
+            furnace=[furnaces[furnaceIdx]],
+            substrate=[substrates[substrateIdx]],
+            )
+    sess = dal.Session()
+    sess.commit()
+    yield
     # Drop all tables
     if dropdb:
+        print("Dropping tables")
         sess = dal.Session()
         sess.close()
         Base.metadata.drop_all(bind=dal.engine)
 
+@pytest.fixture(scope="function")
+def session():
+    """Create a session for testing.
+
+    Yield the session and teardown afterwords.
+    """
+    sess = dal.Session()
+    yield sess
+    print("Closing session")
+    sess.rollback()
+    dal.Session.remove()
+    #sess.close()
 
 # @pytest.fixture(scope="class")
 # def experiment(persistdb, dropdb):
@@ -155,6 +201,7 @@ def recipe(persistdb, dropdb):
 @pytest.fixture(scope="class")
 def author(persistdb, dropdb):
     AuthorFactory._meta.sqlalchemy_session_persistence = persistdb
+    print("Creating authors")
     authors = AuthorFactory.create_batch(10)
     yield authors
     if dropdb:
