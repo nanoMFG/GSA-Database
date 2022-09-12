@@ -1,3 +1,5 @@
+import json
+
 from flask import Blueprint, jsonify, request, make_response
 from flask_cors import CORS
 from datetime import datetime
@@ -7,8 +9,8 @@ from grdb.database.models import (
     Furnace, Substrate, EnvironmentConditions, Recipe, PreparationStep, Experiment, Author, SemFile, SemAnalysis,
     Software, RamanFile, RamanAnalysis, Properties
 )
-# from .utils import aws_s3
-from .. import read_db, write_db
+
+from .. import read_db, write_db, s3
 
 experiments = Blueprint('experiments', __name__, url_prefix='/experiments')
 CORS(experiments)
@@ -54,25 +56,28 @@ def tool_init():
 @experiments.route('/submit', methods=['POST'])
 def submit_experiment():
     db = write_db.Session()
-    body = request.get_json()
+    data = dict(request.form).get('experimentData')
+    data = json.loads(data)
+    uploaded_files = request.files
+
     try:
-        if body.get('useCustomEnvironmentConditions'):
-            ambient_temperature = body.get('useCustomEnvironmentConditions') \
-                if body.get('useCustomEnvironmentConditions') else None
-            dew_point = body.get('ambientTemperature') if body.get('ambientTemperature') else None
+        if data.get('useCustomEnvironmentConditions'):
+            ambient_temperature = data.get('useCustomEnvironmentConditions') \
+                if data.get('useCustomEnvironmentConditions') else None
+            dew_point = data.get('ambientTemperature') if data.get('ambientTemperature') else None
             env_con = EnvironmentConditions(dew_point=dew_point,
                                             ambient_temperature=ambient_temperature)
             db.add(env_con)
             db.flush()
             environment_conditions_id = env_con.id
         else:
-            environment_conditions_id = body.get('environmentConditionsNumber')
+            environment_conditions_id = data.get('environmentConditionsNumber')
 
-        if body.get('useCustomFurnace'):
-            tube_diameter = body.get('tubeDiameter') if body.get('tubeDiameter') else None
-            cross_sectional_area = body.get('crossSectionalArea') if body.get('crossSectionalArea') else None
-            tube_length = body.get('tubeLength') if body.get('tubeLength') else None
-            length_of_heated_region = body.get('lengthOfHeatedRegion') if body.get('lengthOfHeatedRegion') else None
+        if data.get('useCustomFurnace'):
+            tube_diameter = data.get('tubeDiameter') if data.get('tubeDiameter') else None
+            cross_sectional_area = data.get('crossSectionalArea') if data.get('crossSectionalArea') else None
+            tube_length = data.get('tubeLength') if data.get('tubeLength') else None
+            length_of_heated_region = data.get('lengthOfHeatedRegion') if data.get('lengthOfHeatedRegion') else None
             furnace = Furnace(tube_diameter=tube_diameter,
                               cross_sectional_area=cross_sectional_area,
                               tube_length=tube_length,
@@ -81,14 +86,14 @@ def submit_experiment():
             db.flush()
             furnace_id = furnace.id
         else:
-            furnace_id = body.get('furnaceNumber')
+            furnace_id = data.get('furnaceNumber')
 
-        if body.get('useCustomSubstrate'):
-            catalyst = body.get('catalyst') if body.get('catalyst') else None
-            thickness = body.get('thickness') if body.get('thickness') else None
-            diameter = body.get('diameter') if body.get('diameter') else None
-            length = body.get('length') if body.get('length') else None
-            surface_area = body.get('surfaceArea') if body.get('surfaceArea') else None
+        if data.get('useCustomSubstrate'):
+            catalyst = data.get('catalyst') if data.get('catalyst') else None
+            thickness = data.get('thickness') if data.get('thickness') else None
+            diameter = data.get('diameter') if data.get('diameter') else None
+            length = data.get('length') if data.get('length') else None
+            surface_area = data.get('surfaceArea') if data.get('surfaceArea') else None
             substrate = Substrate(catalyst=catalyst,
                                   thickness=thickness,
                                   diameter=diameter,
@@ -98,20 +103,20 @@ def submit_experiment():
             db.flush()
             substrate_id = substrate.id
         else:
-            substrate_id = body.get('substrateNumber')
+            substrate_id = data.get('substrateNumber')
 
-        if body.get('useCustomRecipe'):
-            carbon_source = body.get('carbonSource') if body.get('carbonSource') else None
-            base_pressure = body.get('basePressure') if body.get('basePressure') else None
+        if data.get('useCustomRecipe'):
+            carbon_source = data.get('carbonSource') if data.get('carbonSource') else None
+            base_pressure = data.get('basePressure') if data.get('basePressure') else None
             recipe = Recipe(carbon_source=carbon_source,
                             base_pressure=base_pressure)
             db.add(recipe)
             db.flush()  # flush to get recipe.id
             recipe_id = recipe.id
         else:
-            recipe_id = body.get('recipeNumber')
+            recipe_id = data.get('recipeNumber')
 
-        for i, prep_step in enumerate(body.get('preparationSteps')):
+        for i, prep_step in enumerate(data.get('preparationSteps')):
             name = prep_step.get('name') if prep_step.get('name') else None
             duration = prep_step.get('duration') if prep_step.get('duration') else None
             furnace_temperature = prep_step.get('furnaceTemperature') if prep_step.get('furnaceTemperature') else None
@@ -141,19 +146,23 @@ def submit_experiment():
                                 environment_conditions_id=environment_conditions_id,
                                 substrate_id=substrate_id,
                                 furnace_id=furnace_id,
-                                submitted_by=body.get('authors')[0].get('id'),
+                                submitted_by=data.get('authors')[0].get('id'),
                                 experiment_date=datetime.now(),
-                                material_name=body.get('material_name'))
+                                material_name=data.get('materialName'))
         db.add(experiment)
         db.flush()  # flush to get experiment.id
+        author_ids = list(map(lambda x: x['id'], data.get('authors')))
+        authors = db.query(Author).filter(Author.id.in_(author_ids)).all()
+        for author in authors:
+            experiment.authors.append(author)
 
-        if body.get('useCustomProperties'):
-            average_thickness_of_growth = body.get('avgThicknessOfGrowth') if body.get('avgThicknessOfGrowth') else None
-            standard_deviation_of_growth = body.get('stdDevOfGrowth') if body.get('stdDevOfGrowth') else None
-            number_of_layers = body.get('numberOfLayers') if body.get('numberOfLayers') else None
-            growth_coverage = body.get('growthCoverage') if body.get('growthCoverage') else None
-            domain_size = body.get('domainSize') if body.get('domainSize') else None
-            shape = body.get('shape') if body.get('shape') else None
+        if data.get('useCustomProperties'):
+            average_thickness_of_growth = data.get('avgThicknessOfGrowth') if data.get('avgThicknessOfGrowth') else None
+            standard_deviation_of_growth = data.get('stdDevOfGrowth') if data.get('stdDevOfGrowth') else None
+            number_of_layers = data.get('numberOfLayers') if data.get('numberOfLayers') else None
+            growth_coverage = data.get('growthCoverage') if data.get('growthCoverage') else None
+            domain_size = data.get('domainSize') if data.get('domainSize') else None
+            shape = data.get('shape') if data.get('shape') else None
             properties = Properties(experiment_id=experiment.id,
                                     average_thickness_of_growth=average_thickness_of_growth,
                                     standard_deviation_of_growth=standard_deviation_of_growth,
@@ -164,7 +173,7 @@ def submit_experiment():
             db.add(properties)
             db.flush()
         else:
-            properties = db.query(Properties).filter_by(id=body.get('propertiesNumber')).first()
+            properties = db.query(Properties).filter_by(id=data.get('propertiesNumber')).first()
             new_properties = Properties(experiment_id=experiment.id,
                                         average_thickness_of_growth=properties.average_thickness_of_growth,
                                         standard_deviation_of_growth=properties.standard_deviation_of_growth,
@@ -173,9 +182,19 @@ def submit_experiment():
                                         domain_size=properties.domain_size,
                                         shape=properties.shape)
             db.add(new_properties)
+
+        i = 1
+        for filename, file in uploaded_files.items():
+            object_name = s3.generate_object_name(filename, i)
+            sem_file = SemFile(s3_object_name=object_name)
+            db.add(sem_file)
+            sem_file.experiment = experiment
+            s3.upload_file(file, object_name)
+            i += 1
         db.commit()
     except Exception as e:
         db.rollback()
+        db.close()
         return make_response("Error occurred", 400)
     db.close()
     return make_response("Submission successful", 200)
@@ -189,14 +208,17 @@ def get_experiment(experiment_id):
     experiment_json = experiment.json_encodable()
 
     raman_files = db.query(RamanFile).filter_by(experiment_id=experiment.id).all()
-    # raman_files = []
 
     raman_files_json = []
     for raman_file in raman_files:
         raman_files_json.append(raman_file.read_file())
 
     sem_files = db.query(SemFile).filter_by(experiment_id=experiment.id).all()
-    sem_file_urls = [sem_file.url for sem_file in sem_files]
+    sem_file_urls = []
+    for sem_file in sem_files:
+        if sem_file.s3_object_name:
+            sem_file_urls.append(s3.create_presigned_url(sem_file.s3_object_name))
+
     db.close()
     data = {
         'experiment': experiment_json,
@@ -332,4 +354,5 @@ def query_experiments():
     db.close()
     res = db.query(Experiment).filter(Experiment.id.in_(exp_ids)).all()
     res = [r.json_encodable() for r in res]
+
     return jsonify(res)

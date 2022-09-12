@@ -34,6 +34,7 @@ class SemFile(Base):
 
     filename = Column(String(64))
     url = Column(String(256))
+    s3_object_name = Column(String(256))
 
     # MANY->ONE: sem_file->experiment
     experiment = relationship("Experiment", foreign_keys=experiment_id, back_populates="sem_files")

@@ -55,3 +55,7 @@ class Config:
     PROD_DATABASE_URL_ADMIN = environ.get('PROD_DATABASE_URL_ADMIN')
 
     JWT_SECRET = environ.get('JWT_SECRET')
+    AWS_S3_ACCESS_KEY_ID = environ.get('AWS_S3_ACCESS_KEY_ID')
+    AWS_S3_SECRET_ACCESS_KEY = environ.get('AWS_S3_SECRET_ACCESS_KEY')
+    AWS_S3_REGION_NAME = environ.get('AWS_S3_REGION_NAME')
+    AWS_S3_BUCKET_NAME = environ.get('AWS_S3_BUCKET_NAME')
