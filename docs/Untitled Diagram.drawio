@@ -1,1 +1,37 @@
-<mxfile host="app.diagrams.net" modified="2022-09-12T15:18:15.618Z" agent="5.0 (Windows)" version="20.3.0" etag="hnDZRqSie4esRghwCbub" type="github"><diagram id="Z5fxFt_62ZHdNjmFhS7M">UzV2zq1wL0osyPDNT0nNUTV2VTV2LsrPL4GwciucU3NyVI0MMlNUjV1UjYwMgFjVyA2HrCFY1qAgsSg1rwSLBiADYTaQg2Y1AA==</diagram></mxfile>
+<mxfile host="app.diagrams.net" modified="2022-09-12T15:38:25.187Z" agent="5.0 (Windows)" etag="L6tzsx7Rap9EQyKWx0Sl" version="20.3.0" type="github">
+  <diagram id="Z5fxFt_62ZHdNjmFhS7M" name="Page-1">
+    <mxGraphModel dx="775" dy="1088" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="j-eddlSZOhNs34BTW-va-1" value="&lt;h2&gt;Flask Web App (Backend API)&lt;br&gt;&lt;/h2&gt;&lt;div align=&quot;left&quot;&gt;&lt;ul&gt;&lt;li&gt;Implements API to the GSA-Database.&lt;/li&gt;&lt;li&gt;Uses SQLAlchemy model connection via sessions&lt;br&gt;&lt;/li&gt;&lt;li&gt;&lt;br&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
+          <mxGeometry x="80" y="81" width="200" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="j-eddlSZOhNs34BTW-va-3" value="&lt;h2&gt;GSA-Database&lt;br&gt;&lt;/h2&gt;&lt;div align=&quot;left&quot;&gt;&lt;ul&gt;&lt;li&gt;Defined by SQLAlchemy model class definitions&lt;/li&gt;&lt;li&gt;MySQL database backend&lt;br&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
+          <mxGeometry x="80" y="360" width="200" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="j-eddlSZOhNs34BTW-va-4" value="&lt;h2&gt;NodeJS (Backend)&lt;/h2&gt;&lt;div align=&quot;left&quot;&gt;&lt;ul&gt;&lt;li&gt;Implements Role based authentication&lt;/li&gt;&lt;li&gt;Uses DynDb schema&lt;br&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
+          <mxGeometry x="400" y="81" width="200" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="j-eddlSZOhNs34BTW-va-5" value="Requests" style="shape=flexArrow;endArrow=classic;html=1;rounded=0;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="470" y="360" as="sourcePoint" />
+            <mxPoint x="470" y="281" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="j-eddlSZOhNs34BTW-va-6" value="&lt;div&gt;Authenticated Requests&lt;/div&gt;" style="shape=singleArrow;direction=west;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="280" y="100" width="120" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="j-eddlSZOhNs34BTW-va-7" value="&lt;div&gt;Database Connection&lt;/div&gt;" style="shape=flexArrow;endArrow=classic;html=1;rounded=0;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="160" y="280" as="sourcePoint" />
+            <mxPoint x="160" y="360" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="160" y="311" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
