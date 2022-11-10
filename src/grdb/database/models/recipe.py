@@ -58,7 +58,7 @@ class Recipe(Base):
                 p.furnace_temperature
                 for p in self.preparation_steps
                 if p.furnace_temperature != None
-            ]
+            ], default = None
         )
 
     @maximum_temperature.expression
@@ -78,7 +78,7 @@ class Recipe(Base):
                 p.furnace_pressure
                 for p in self.preparation_steps
                 if p.furnace_pressure != None
-            ]
+            ], default = None
         )
 
     @maximum_pressure.expression
@@ -98,7 +98,7 @@ class Recipe(Base):
             for p in self.preparation_steps
             if p.carbon_source_flow_rate != None
         ]
-        return sum(steps) / len(steps)
+        return sum(steps) / len(steps) 
 
     @average_carbon_flow_rate.expression
     def average_carbon_flow_rate(cls):
@@ -108,6 +108,62 @@ class Recipe(Base):
                 .where(PreparationStep.recipe_id == cls.id)
                 .correlate(cls)
                 .label("average_carbon_flow_rate")
+        )
+
+    @hybrid_property
+    def max_flow_rate(self):
+        steps = [
+            (p.hydrogen_flow_rate or 0)+(p.helium_flow_rate or 0)+(p.argon_flow_rate or 0)
+            for p in self.preparation_steps
+        ]
+        return max(steps, default = None)
+
+    @max_flow_rate.expression
+    def max_flow_rate(cls):
+        PreparationStep = class_registry["PreparationStep"]
+        return (
+            select([func.max((PreparationStep.hydrogen_flow_rate or 0)+(PreparationStep.helium_flow_rate or 0)+(PreparationStep.argon_flow_rate or 0))])
+                .where(PreparationStep.recipe_id == cls.id)
+                .correlate(cls)
+                .label("max_flow_rate")
+        )
+    
+    @hybrid_property
+    def growth_duration(self):
+        steps = [
+            p.duration
+            for p in self.preparation_steps
+                if p.name == "Growing" and p.duration!=None
+        ]
+        return max(steps, default = None)
+
+    @growth_duration.expression
+    def growth_duration(cls):
+        PreparationStep = class_registry["PreparationStep"]
+        return (
+            select([func.max(PreparationStep.duration)])
+                .where(PreparationStep.recipe_id == cls.id and PreparationStep.name == "Growing")
+                .correlate(cls)
+                .label("growth_duration")
+        )
+    
+    @hybrid_property
+    def carbon_source_flow_rate(self):
+        steps = [
+            p.carbon_source_flow_rate
+            for p in self.preparation_steps
+            if p.name == "Growing" and p.carbon_source_flow_rate != None
+        ]
+        return max(steps, default = None)
+
+    @carbon_source_flow_rate.expression
+    def carbon_source_flow_rate(cls):
+        PreparationStep = class_registry["PreparationStep"]
+        return (
+            select([func.avg(PreparationStep.carbon_source_flow_rate)])
+                .where(PreparationStep.recipe_id == cls.id and PreparationStep.name == "Growing")
+                .correlate(cls)
+                .label("carbon_source_flow_rate")
         )
 
     # NOTE: This is really the carbon source from the first step.
@@ -195,10 +251,18 @@ class Recipe(Base):
         return exists(s)
 
     def json_encodable(self):
+        # check if necessary
         params = [
             "carbon_source",
             "base_pressure",
-        ]
+            "maximum_temperature",
+            "maximum_pressure",
+            "max_flow_rate",
+            "growth_duration",
+            "carbon_source_flow_rate",
+            "uses_helium",
+            "uses_argon"
+        ] 
         json_dict = {'id': self.id}
         for p in params:
             info = getattr(Recipe, p).info
