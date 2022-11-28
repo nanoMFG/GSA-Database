@@ -37,7 +37,7 @@ class Substrate(Base):
         String(16),
         info={
             "verbose_name": "Catalyst",
-            "choices": ["Copper", "Palladium", "Platinum", "Other"],
+            "choices": ["Copper", "Palladium", ,"Palladium leaf", "Platinum", "Other"],
             "required": True,
         },
     )
