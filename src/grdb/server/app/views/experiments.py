@@ -42,6 +42,13 @@ def tool_init():
 
     authors = db.query(Author).order_by(Author.id.desc()).all()
     authors_json = [a.json_encodable() for a in authors]
+
+    catalyst = db.query(Substrate.catalyst).order_by(Substrate.catalyst).distinct()
+    catalyst_list = [c for c in catalyst]
+
+    carbon_source = db.query(Recipe.carbon_source).order_by(Recipe.carbon_source).distinct()
+    carbon_source_list = [c for c in carbon_source if c[0]!=None and c[0]!='']
+
     db.close()
     return {
         'environment_conditions': env_conditions_json,
@@ -50,6 +57,8 @@ def tool_init():
         'recipes': recipes_json,
         'substrates': substrates_json,
         'authors': authors_json,
+        'catalyst': catalyst_list,
+        'carbon_source': carbon_source_list
     }
 
 
