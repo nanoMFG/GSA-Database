@@ -194,9 +194,14 @@ def submit_experiment():
         i = 1
         for filename, file in uploaded_files.items():
             object_name = s3.generate_object_name(filename, i)
-            sem_file = SemFile(s3_object_name=object_name)
-            db.add(sem_file)
-            sem_file.experiment = experiment
+            if object_name.startswith('sem/'):
+                sem_file = SemFile(s3_object_name=object_name)
+                db.add(sem_file)
+                sem_file.experiment = experiment
+            elif object_name.startswith('raman/'):
+                raman_file = RamanFile(s3_object_name=object_name)
+                db.add(raman_file)
+                raman_file.experiment = experiment
             s3.upload_file(file, object_name)
             i += 1
         db.commit()
@@ -226,6 +231,8 @@ def get_experiment(experiment_id):
     for sem_file in sem_files:
         if sem_file.s3_object_name:
             sem_file_urls.append(s3.create_presigned_url(sem_file.s3_object_name))
+        else:
+            sem_file_urls.append(sem_file.url)
 
     db.close()
     data = {

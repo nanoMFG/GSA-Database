@@ -5,7 +5,9 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from grdb.database import Base
 
 from urllib.request import urlopen
-
+import ssl
+import certifi
+from grdb.server.app import s3
 
 class RamanFile(Base):
     """[summary]
@@ -77,7 +79,11 @@ class RamanFile(Base):
         """
         Fetch the raman file from the url and returns the file in json encodable form
         """
-        file = urlopen(self.url)
+        if(self.url is None):
+            self.url = s3.create_presigned_url(self.s3_object_name)
+            print(self.url,flush=True)
+        context = ssl.create_default_context(cafile=certifi.where())
+        file = urlopen(self.url,context=context)
         data = []
         for line in file:
             line = line.decode('utf-8').split()
