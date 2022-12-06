@@ -13,6 +13,12 @@ from .. import read_db, write_db, s3
 authors = Blueprint('authors', __name__, url_prefix='/authors')
 CORS(authors)
 
+@authors.route('/<int:id>', methods=['GET'])
+def get_author_id(id):
+    db = read_db.Session()
+    author = db.query(Author).filter_by(id=id).first()
+    db.close()
+    return jsonify(author.json_encodable())
 
 @authors.route('', methods=['GET'])
 def get_author():

@@ -42,6 +42,13 @@ def tool_init():
 
     authors = db.query(Author).order_by(Author.id.desc()).all()
     authors_json = [a.json_encodable() for a in authors]
+
+    catalyst = db.query(Substrate.catalyst).order_by(Substrate.catalyst).distinct()
+    catalyst_list = [c for c in catalyst]
+
+    carbon_source = db.query(Recipe.carbon_source).order_by(Recipe.carbon_source).distinct()
+    carbon_source_list = [c for c in carbon_source if c[0]!=None and c[0]!='']
+
     db.close()
     return {
         'environment_conditions': env_conditions_json,
@@ -50,6 +57,8 @@ def tool_init():
         'recipes': recipes_json,
         'substrates': substrates_json,
         'authors': authors_json,
+        'catalyst': catalyst_list,
+        'carbon_source': carbon_source_list
     }
 
 
@@ -62,9 +71,8 @@ def submit_experiment():
 
     try:
         if data.get('useCustomEnvironmentConditions'):
-            ambient_temperature = data.get('useCustomEnvironmentConditions') \
-                if data.get('useCustomEnvironmentConditions') else None
-            dew_point = data.get('ambientTemperature') if data.get('ambientTemperature') else None
+            ambient_temperature = data.get('ambientTemperature') if data.get('ambientTemperature') else None
+            dew_point = data.get('dewPoint') if data.get('dewPoint') else None
             env_con = EnvironmentConditions(dew_point=dew_point,
                                             ambient_temperature=ambient_temperature)
             db.add(env_con)
@@ -186,9 +194,14 @@ def submit_experiment():
         i = 1
         for filename, file in uploaded_files.items():
             object_name = s3.generate_object_name(filename, i)
-            sem_file = SemFile(s3_object_name=object_name)
-            db.add(sem_file)
-            sem_file.experiment = experiment
+            if object_name.startswith('sem/'):
+                sem_file = SemFile(s3_object_name=object_name)
+                db.add(sem_file)
+                sem_file.experiment = experiment
+            elif object_name.startswith('raman/'):
+                raman_file = RamanFile(s3_object_name=object_name)
+                db.add(raman_file)
+                raman_file.experiment = experiment
             s3.upload_file(file, object_name)
             i += 1
         db.commit()
@@ -218,6 +231,8 @@ def get_experiment(experiment_id):
     for sem_file in sem_files:
         if sem_file.s3_object_name:
             sem_file_urls.append(s3.create_presigned_url(sem_file.s3_object_name))
+        else:
+            sem_file_urls.append(sem_file.url)
 
     db.close()
     data = {
@@ -244,12 +259,12 @@ def query_experiments():
             author_filters.append(filt)
         elif category == 'property':
             property_filters.append(filt)
-        elif category == 'environmentalCondition':
+        elif category == 'environmentCondition':
             environmental_condition_filters.append(filt)
         elif category == 'furnace':
             furnace_filters.append(filt)
-        # elif category == 'recipe': TODO: how to filter recipe?
-        #     recipe_filters.append(filt)
+        elif category == 'recipe': # TODO: how to filter recipe?
+            recipe_filters.append(filt)
         elif category == 'substrate':
             substrate_filters.append(filt)
 
@@ -350,6 +365,66 @@ def query_experiments():
 
         exp_ids_satisfying_property_filters = extract_first_elem(query.all())
         exp_ids.intersection_update(exp_ids_satisfying_property_filters)
+    
+    '''    QUERYING ENVIRONMENT CONDITIONS FILTERS    '''
+    if environmental_condition_filters:
+        query = db.query(Experiment.id).join(EnvironmentConditions)
+        for environmental_condition_filter in environmental_condition_filters:
+            filter_name = environmental_condition_filter['name']
+            if 'Dew Point' in filter_name:
+                query = query \
+                    .filter(and_(EnvironmentConditions.dew_point, EnvironmentConditions.dew_point >= environmental_condition_filter['min'],
+                                 EnvironmentConditions.dew_point <= environmental_condition_filter['max']))
+            elif 'Ambient Temperature' in filter_name:
+                query = query \
+                    .filter(and_(EnvironmentConditions.ambient_temperature, EnvironmentConditions.ambient_temperature >= environmental_condition_filter['min'],
+                                 EnvironmentConditions.ambient_temperature <= environmental_condition_filter['max']))
+        exp_ids_satisfying_environmental_condition_filters = extract_first_elem(query.all())
+        exp_ids.intersection_update(exp_ids_satisfying_environmental_condition_filters)    
+
+    '''    QUERYING RECIPE FILTERS    '''
+    if recipe_filters:
+        query = db.query(Experiment.id).join(Recipe)
+        for recipe_filter in recipe_filters:
+            filter_name = recipe_filter['name']
+            if filter_name == 'Carbon Source' :
+                query = query \
+                    .filter(Recipe.carbon_source == recipe_filter['value'])
+            elif 'Base Pressure' in filter_name:
+                query = query \
+                    .filter(and_(Recipe.base_pressure >= recipe_filter['min'],
+                                 Recipe.base_pressure <= recipe_filter['max']))
+            elif 'Inert Gas' in filter_name:
+                if 'Argon' in recipe_filter['value']:
+                    query = query \
+                        .filter(Recipe.uses_argon == True)
+                elif 'Helium' in recipe_filter['value']:
+                    query = query \
+                        .filter(Recipe.uses_helium == True)
+            elif 'Maximum Temperature' in filter_name:
+                query = query \
+                    .filter(and_(Recipe.maximum_temperature >= recipe_filter['min'],
+                                 Recipe.maximum_temperature <= recipe_filter['max']))
+            elif 'Maximum Pressure' in filter_name:
+                query = query \
+                    .filter(and_(Recipe.maximum_pressure >= recipe_filter['min'],
+                                 Recipe.maximum_pressure <= recipe_filter['max']))
+            elif 'Max Flow Rate' in filter_name:
+                query = query \
+                    .filter(and_(Recipe.max_flow_rate >= recipe_filter['min'],
+                                 Recipe.max_flow_rate <= recipe_filter['max']))
+            elif 'Growth Duration' in filter_name:
+                query = query \
+                    .filter(and_(Recipe.growth_duration >= recipe_filter['min'],
+                                 Recipe.growth_duration <= recipe_filter['max']))
+            elif 'Carbon Source Flow Rate' in filter_name:
+                query = query \
+                    .filter(and_(Recipe.carbon_source_flow_rate >= recipe_filter['min'],
+                                 Recipe.carbon_source_flow_rate <= recipe_filter['max']))
+        #for row in query.all():
+        #    print(row)
+        exp_ids_satisfying_recipe_filters = extract_first_elem(query.all())
+        exp_ids.intersection_update(exp_ids_satisfying_recipe_filters)
 
     db.close()
     res = db.query(Experiment).filter(Experiment.id.in_(exp_ids)).all()

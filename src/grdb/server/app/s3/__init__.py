@@ -66,4 +66,4 @@ def is_sem_file(filename):
 
 
 def is_raman_file(filename):
-    return len(filename) >= 5 and filename[:3] == 'raman'
+    return len(filename) >= 5 and filename[:5] == 'raman'
